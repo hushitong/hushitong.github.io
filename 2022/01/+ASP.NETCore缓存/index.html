@@ -22,15 +22,15 @@
     var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":260,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="基础知识Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改 且生成成本 高的数据。 Caching可比从源返回快得多的数据副本。 ASP.NET Core支持多个不同的缓存  客户端缓存 Cache-control 服务器端响应缓存 ResponseCaching 内存缓存  In-MemoryCache 分布式缓存 DistributedC">
+  <meta name="description" content="基础知识Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改且 生成成本高 的数据。 Caching可比从源返回快得多的数据副本。 ASP.NET Core支持多个不同的缓存  客户端缓存 Cache-control 服务器端响应缓存 ResponseCaching 内存缓存  In-MemoryCache 分布式缓存 DistributedC">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ASP.NET Core缓存">
-<meta property="og:url" content="http://hushitong.github.io/2022/01/30/ASP.NETCore%E7%BC%93%E5%AD%98/index.html">
+<meta property="og:url" content="http://hushitong.github.io/2022/01/+ASP.NETCore%E7%BC%93%E5%AD%98/index.html">
 <meta property="og:site_name" content="Singo&#39;Sky">
-<meta property="og:description" content="基础知识Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改 且生成成本 高的数据。 Caching可比从源返回快得多的数据副本。 ASP.NET Core支持多个不同的缓存  客户端缓存 Cache-control 服务器端响应缓存 ResponseCaching 内存缓存  In-MemoryCache 分布式缓存 DistributedC">
+<meta property="og:description" content="基础知识Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改且 生成成本高 的数据。 Caching可比从源返回快得多的数据副本。 ASP.NET Core支持多个不同的缓存  客户端缓存 Cache-control 服务器端响应缓存 ResponseCaching 内存缓存  In-MemoryCache 分布式缓存 DistributedC">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-01-29T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-29T16:00:00.000Z">
+<meta property="article:published_time" content="2022-01-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-18T16:00:00.000Z">
 <meta property="article:author" content="Singo">
 <meta property="article:tag" content="ASP.NET Core">
 <meta property="article:tag" content=".Net Core">
@@ -38,7 +38,7 @@
 <meta property="article:tag" content="缓存">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://hushitong.github.io/2022/01/30/ASP.NETCore%E7%BC%93%E5%AD%98/">
+<link rel="canonical" href="http://hushitong.github.io/2022/01/+ASP.NETCore%E7%BC%93%E5%AD%98/">
 
 
 <script id="page-configurations">
@@ -195,7 +195,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hushitong.github.io/2022/01/30/ASP.NETCore%E7%BC%93%E5%AD%98/">
+    <link itemprop="mainEntityOfPage" href="http://hushitong.github.io/2022/01/+ASP.NETCore%E7%BC%93%E5%AD%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -218,7 +218,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-01-30 00:00:00" itemprop="dateCreated datePublished" datetime="2022-01-30T00:00:00+08:00">2022-01-30</time>
+              <time title="创建时间：2022-01-19 00:00:00" itemprop="dateCreated datePublished" datetime="2022-01-19T00:00:00+08:00">2022-01-19</time>
             </span>
 
           
@@ -234,14 +234,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.2k</span>
+              <span>8.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -253,7 +253,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改 <strong>且生成成本</strong> 高的数据。 Caching可比从源返回快得多的数据副本。</p>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改且 <strong>生成成本高</strong> 的数据。 Caching可比从源返回快得多的数据副本。</p>
 <p>ASP.NET Core支持多个不同的缓存</p>
 <ul>
 <li>客户端缓存 Cache-control</li>
@@ -326,8 +326,6 @@
 <li><p>不过可以混用两种策略，让缓存数据能够在滑动过期时间的基础上，通过设置绝对过期时间来达到强制刷新数据的目的，也就是说在绝对过期时间这个点数据必定过期，滑动时间影响不了。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//混用绝对过期时间与滑动过期时间</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">15</span>);  <span class="comment">//绝对过期时间15秒</span></span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);  <span class="comment">//滑动过期时间5秒</span></span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
 </ul>
-<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>  缓存雪崩是由于原有缓存失效(过期)，新缓存未到期间。所有请求都去查询数据库，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</p>
-<p><strong>解决办法</strong>：在基础过期时间的基础上，加上一个随机时间，防止同一时间大量数据过期现象发生。如：本来统一设置位3分钟的，变为3分钟加1-15秒的随机数。</p>
 <h2 id="分布式缓存-DistributedCache"><a href="#分布式缓存-DistributedCache" class="headerlink" title="分布式缓存 DistributedCache"></a>分布式缓存 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed">DistributedCache</a></h2><p>内存缓存在比较简单的应用里是足够使用的，但是对于现在需要多台服务器进行负载均衡的架构环境中就显得有点不太够用，如会出现：缓存内容不一致、多台服务器缓存同一内容浪费内存空间等问题，因此需要一个独立的统一的缓存存储中心，以便让所有的Web服务器共享同一份缓存数据，我们将这种缓存形式称为<strong>分布式缓存</strong>。</p>
 <p>有关.NET Core的分布式缓存如下：</p>
 <ul>
@@ -366,9 +364,32 @@
 <li><p>使用</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">RedisController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> IDistributedCache _cache;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RedisController</span>(<span class="params">IDistributedCache cache</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache = cache;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Get&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Get</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//获取</span></span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Set&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Set</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (obj == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">int</span> absoluteExpirationRelativeToNowSec = <span class="number">100</span>;</span><br><span class="line">            <span class="built_in">int</span> slidingExpirationSec = <span class="number">50</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//添加，注意：添加Redis后的类型是hash</span></span><br><span class="line">            <span class="comment">//默认没有过期时间</span></span><br><span class="line">            <span class="comment">//_cache.Set(&quot;id1&quot;, Encoding.Default.GetBytes(&quot;永不过期，缓存时间是：&#123;DateTime.Now.ToLongTimeString()&#125;&quot;), new DistributedCacheEntryOptions &#123; &#125;);</span></span><br><span class="line">            <span class="comment">//同样可以设置绝对过期时间与滑动过期时间</span></span><br><span class="line">            _cache.Set(</span><br><span class="line">                <span class="string">&quot;id1&quot;</span>,</span><br><span class="line">                Encoding.Default.GetBytes(<span class="string">$&quot;缓存时间是：<span class="subst">&#123;DateTime.Now.ToLongTimeString()&#125;</span>，过期时间是：<span class="subst">&#123;DateTime.Now.AddSeconds(absoluteExpirationRelativeToNowSec).ToLongTimeString()&#125;</span>&quot;</span>),</span><br><span class="line">                <span class="keyword">new</span> DistributedCacheEntryOptions</span><br><span class="line">                &#123;</span><br><span class="line">                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(absoluteExpirationRelativeToNowSec),</span><br><span class="line">                    SlidingExpiration = TimeSpan.FromSeconds(slidingExpirationSec)</span><br><span class="line">                &#125;</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Del&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Del</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//移除</span></span><br><span class="line">        _cache.Remove(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Refresh&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Refresh</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//刷新，Get命令同样会刷新滑动过期时间</span></span><br><span class="line">        _cache.Refresh(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ol>
+<h2 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h2><h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>访问一个缓存和数据库都不存在的key，由于该key注定获得不了数据，因此不会被写缓存，永远都会直接访问到数据库上。这种缓存永远起不了作用，直接被”穿透“到数据库的情况，被称为缓存穿透。</p>
+<p> <strong>解决方案</strong>：</p>
+<ul>
+<li>接口层增加校验，如用户鉴权校验，id做基础校验，id&lt;=0的直接拦截；</li>
+<li>当出现这种请求时，也将其缓存，其key为请求的key，value为null，但是缓存有效时间设置短点，如30秒（设置太长会导致正常情况也没法使用）。这样可以防止攻击用户反复用同一个id暴力攻击。</li>
+</ul>
+<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>某一个热点key，在缓存过期的一瞬间，同时有大量的请求打进来，由于此时缓存过期了，所以请求最终都会走到数据库，造成瞬时数据库请求量大、压力骤增，甚至可能打垮数据库。</p>
+<p><strong>解决方案</strong>：</p>
+<ul>
+<li><strong>加互斥锁</strong>。在并发的多个请求中，只有第一个请求线程能拿到锁并执行数据库查询操作，其他的线程拿不到锁就阻塞等着，等到第一个线程将数据写入缓存后，直接走缓存。</li>
+<li><strong>热点数据不过期</strong>。直接将缓存设置为不过期，然后由定时任务去异步加载数据，更新缓存。</li>
+</ul>
+<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>  缓存雪崩是由于原有缓存失效(过期)，新缓存未到期间。所有请求都去查询数据库，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</p>
+<p><strong>解决方案</strong>：</p>
+<ul>
+<li><p><strong>加互斥锁</strong>。同<a href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF">缓存击穿</a>的。</p>
+</li>
+<li><p><strong>热点数据不过期</strong>。同<a href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF">缓存击穿</a>的。</p>
+</li>
+<li><p><strong>错开过期时间</strong>。在基础过期时间的基础上，加上一个随机时间，防止同一时间大量数据过期现象发生。如：本来统一设置位3分钟的，变为3分钟加1-15秒的随机数。</p>
+</li>
+</ul>
 <h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>本文章是基本上是基于ASP.NET Core3.1版本编写，其后续版本可能发生变化，具体使用请去<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/aspnet/core/performance/caching/overview">微软官方文档</a>查看。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/aspnet/core/performance/caching/overview">微软官方文档</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1pK41137He">.NET 6教程，.Net Core 2022视频教程，杨中科主讲</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/359118610">缓存穿透、缓存击穿、缓存雪崩解决方案</a></p>
 
     </div>
 
@@ -390,11 +411,11 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/01/06/+ASP.NETCore%E4%BD%BF%E7%94%A8Swagger/" rel="prev" title="ASP.NETCore使用Swagger">
+    <a href="/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8Swagger/" rel="prev" title="ASP.NETCore使用Swagger">
       <i class="fa fa-chevron-left"></i> ASP.NETCore使用Swagger
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/01/30/ASP.NETCore%E7%9A%84Filter/" rel="next" title="ASP.NETCore的Filter">
+    <a href="/2022/01/ASP.NETCore%E7%9A%84Filter/" rel="next" title="ASP.NETCore的Filter">
       ASP.NETCore的Filter <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -455,7 +476,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%86%E5%88%99"><span class="nav-text">缓存准则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%BC%93%E5%AD%98-Cache-control"><span class="nav-text">客户端缓存 Cache-control</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%93%8D%E5%BA%94%E7%BC%93%E5%AD%98-ResponseCaching"><span class="nav-text">服务器端响应缓存 ResponseCaching</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%9D%A1%E4%BB%B6"><span class="nav-text">缓存条件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%BC%93%E5%AD%98-IMemoryCache"><span class="nav-text">内存缓存  IMemoryCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E7%AD%96%E7%95%A5"><span class="nav-text">过期时间策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-text">缓存雪崩</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98-DistributedCache"><span class="nav-text">分布式缓存 DistributedCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDistributedCache%E6%8E%A5%E5%8F%A3%E5%8C%85%E5%90%AB%E4%BB%A5%E4%B8%8B%E6%96%B9%E6%B3%95"><span class="nav-text">IDistributedCache接口包含以下方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98"><span class="nav-text">Redis 分布式缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-text">注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%86%E5%88%99"><span class="nav-text">缓存准则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%BC%93%E5%AD%98-Cache-control"><span class="nav-text">客户端缓存 Cache-control</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%93%8D%E5%BA%94%E7%BC%93%E5%AD%98-ResponseCaching"><span class="nav-text">服务器端响应缓存 ResponseCaching</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%9D%A1%E4%BB%B6"><span class="nav-text">缓存条件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%BC%93%E5%AD%98-IMemoryCache"><span class="nav-text">内存缓存  IMemoryCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E7%AD%96%E7%95%A5"><span class="nav-text">过期时间策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98-DistributedCache"><span class="nav-text">分布式缓存 DistributedCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDistributedCache%E6%8E%A5%E5%8F%A3%E5%8C%85%E5%90%AB%E4%BB%A5%E4%B8%8B%E6%96%B9%E6%B3%95"><span class="nav-text">IDistributedCache接口包含以下方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98"><span class="nav-text">Redis 分布式缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%97%AE%E9%A2%98"><span class="nav-text">缓存问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-text">缓存雪崩</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-text">注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -531,7 +552,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">25 分钟</span>
+    <span title="站点阅读时长">26 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
