@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>ASP.NETCore使用Swagger</title>
-    <url>/index.html/2022/01/06/+ASP.NETCore%E4%BD%BF%E7%94%A8Swagger/</url>
+    <url>/2022/01/06/+ASP.NETCore%E4%BD%BF%E7%94%A8Swagger/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是swagger"><a href="#什么是swagger" class="headerlink" title="什么是swagger"></a>什么是swagger</h2><p><a href="https://swagger.io/">swagger</a>是一款RESTFUL接口的文档在线自动生成+功能测试功能软件。Swagger是一个规范和完整的框架，用于生成、描述、调用和可视化RESTful风格的Web服务。</p>
 <p>简单来讲，使用swagger能够自动生成友好的在线接口文档，并且支持接口测试，其好处：</p>
 <ul>
@@ -68,7 +68,7 @@
   </entry>
   <entry>
     <title>ASP.NETCore的Filter</title>
-    <url>/index.html/2022/01/30/ASP.NETCore%E7%9A%84Filter/</url>
+    <url>/2022/01/30/ASP.NETCore%E7%9A%84Filter/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是Filter"><a href="#什么是Filter" class="headerlink" title="什么是Filter"></a>什么是Filter</h2><p>过滤器（Filter）是 AOP[^AOP]思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。</p>
 <p>下面图片显示了管道所在位置</p>
 <p><img src="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-1.png" alt="aspnetcore-filter-pipeline-1.png"></p>
@@ -223,7 +223,7 @@
   </entry>
   <entry>
     <title>快速打开关闭sqlserver相关服务</title>
-    <url>/index.html/2021/12/30/%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80%E5%85%B3%E9%97%ADsqlserver%E7%9B%B8%E5%85%B3%E6%9C%8D%E5%8A%A1/</url>
+    <url>/2021/12/30/%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80%E5%85%B3%E9%97%ADsqlserver%E7%9B%B8%E5%85%B3%E6%9C%8D%E5%8A%A1/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SQL Server安装后默认是一直随系统启动的，对于服务器当然没问题，但是对于个人开发而言，确实是不希望在不需要时一直运行相关SQL Server的服务。毕竟个人电脑性能有限，还是希望软件能够要用的才打开，不需要时能够释放占用的性能。</p>
 <p>于是就有了这篇文章，提供一个脚本，需要时开启SQL Server相关服务，不需要是关闭SQL Server相关服务。</p>
 <span id="more"></span>
@@ -276,7 +276,7 @@
   </entry>
   <entry>
     <title>ASP.NET Core缓存</title>
-    <url>/index.html/2022/01/30/ASP.NETCore%E7%BC%93%E5%AD%98/</url>
+    <url>/2022/01/30/ASP.NETCore%E7%BC%93%E5%AD%98/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改 <strong>且生成成本</strong> 高的数据。 Caching可比从源返回快得多的数据副本。</p>
 <p>ASP.NET Core支持多个不同的缓存</p>
 <ul>
