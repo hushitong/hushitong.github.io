@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言事情的起点就在于我在弄ASP .NET Core下的OAuth2.0流程，想要看看具体的Cookie信息有哪些，发现Cookie信息被加密了，检索了一番，发现了解决办法 如何解密Cookie ，然后顺便找了一下原理。 如何解密Cookie主要代码来源：How to manually decrypt an ASP.NET Core Authentication cookie?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ASP.NETCore如何解密Cookie">
+<meta property="og:url" content="http://hushitong.github.io/2022/02/+ASP.NETCore%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie/index.html">
+<meta property="og:site_name" content="Singo&#39;Sky">
+<meta property="og:description" content="前言事情的起点就在于我在弄ASP .NET Core下的OAuth2.0流程，想要看看具体的Cookie信息有哪些，发现Cookie信息被加密了，检索了一番，发现了解决办法 如何解密Cookie ，然后顺便找了一下原理。 如何解密Cookie主要代码来源：How to manually decrypt an ASP.NET Core Authentication cookie?">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-16T16:00:00.000Z">
+<meta property="article:author" content="Singo">
+<meta property="article:tag" content="ASP.NET Core">
+<meta property="article:tag" content=".Net Core">
+<meta property="article:tag" content="Data Protection">
+<meta property="article:tag" content="Cookie">
+<meta property="article:tag" content="解密">
+<meta property="article:tag" content="加密">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hushitong.github.io/2022/02/+ASP.NETCore%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ASP.NETCore如何解密Cookie | Singo'Sky</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Singo'Sky</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hushitong.github.io/2022/02/+ASP.NETCore%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Singo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Singo'Sky">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ASP.NETCore如何解密Cookie
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-17 00:00:00" itemprop="dateCreated datePublished" datetime="2022-02-17T00:00:00+08:00">2022-02-17</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>事情的起点就在于我在弄ASP .NET Core下的OAuth2.0流程，想要看看具体的Cookie信息有哪些，发现Cookie信息被加密了，检索了一番，发现了解决办法 <a href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie">如何解密Cookie</a> ，然后顺便找了一下原理。</p>
+<h2 id="如何解密Cookie"><a href="#如何解密Cookie" class="headerlink" title="如何解密Cookie"></a>如何解密Cookie</h2><p>主要代码来源：<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/42842511/how-to-manually-decrypt-an-asp-net-core-authentication-cookie">How to manually decrypt an ASP.NET Core Authentication cookie?</a></p>
+<span id="more"></span>
+
+<ol>
+<li><p><code>Startup.CongigureServices</code>里注册的部分代码</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">services.AddAuthentication(config =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//但我们登陆后，设置Cookie</span></span><br><span class="line">    config.DefaultSignInScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">    <span class="comment">//使用作为验证是否登陆</span></span><br><span class="line">    config.DefaultAuthenticateScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">&#125;).AddCookie(<span class="string">&quot;MyCookieScheme&quot;</span>, options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//设置密钥存储位置，你也可以使用services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@&quot;C:\temp-keys2\&quot;))</span></span><br><span class="line">    options.DataProtectionProvider = DataProtectionProvider.Create(<span class="keyword">new</span> DirectoryInfo(<span class="string">@&quot;C:\temp-keys\&quot;</span>));</span><br><span class="line">    options.Cookie.Name = <span class="string">&quot;MyClientCookie&quot;</span>; <span class="comment">//默认为：.AspNetCore.Cookies</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>解密Cookie</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">DecryptCookie</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//获得加密了的Cookie值，Cookie名假如注册时候没指定的话为：.AspNetCore.Cookies</span></span><br><span class="line">    <span class="built_in">string</span> cookieValue = HttpContext.Request.Cookies[<span class="string">&quot;MyClientCookie&quot;</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//使用Create方法生成DataProtectionProvider对象，密钥存储位置值与在ConfigureServices注册时一致</span></span><br><span class="line">    <span class="keyword">var</span> provider = DataProtectionProvider.Create(<span class="keyword">new</span> DirectoryInfo(<span class="string">@&quot;C:\temp-keys\&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获得DataProtector对象，第二个参数的值你在注册Cookies时候设定的Scheme名，没有设定的话其默认值为：Cookies</span></span><br><span class="line">    <span class="keyword">var</span> dataProtector = provider.CreateProtector(<span class="string">&quot;Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationMiddleware&quot;</span>, <span class="string">&quot;MyCookieScheme&quot;</span>, <span class="string">&quot;v2&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//解密Cookie值，变为普通文本</span></span><br><span class="line">    <span class="built_in">byte</span>[] protectedBytes = Base64UrlTextEncoder.Decode(cookieValue);</span><br><span class="line">    <span class="built_in">byte</span>[] plainBytes = dataProtector.Unprotect(protectedBytes);</span><br><span class="line">    <span class="built_in">string</span> plainText = Encoding.UTF8.GetString(plainBytes);</span><br><span class="line">    <span class="comment">//上面的Encoding.UTF8.GetString不行的话使用下面的</span></span><br><span class="line">    <span class="comment">//UTF8Encoding specialUtf8Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);</span></span><br><span class="line">    <span class="comment">//string plainText = specialUtf8Encoding.GetString(plainBytes);</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//或解密Cookie值，转换为AuthenticationTicket对象</span></span><br><span class="line">    TicketDataFormat ticketDataFormat = <span class="keyword">new</span> TicketDataFormat(dataProtector);</span><br><span class="line">    AuthenticationTicket ticket = ticketDataFormat.Unprotect(cookieValue);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Ok(JsonConvert.SerializeObject(ticket.Properties.Items));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>注意</strong>：</p>
+<ul>
+<li><p>最重要的是设置保存到 <code>C:\temp-keys\</code> 下的私钥文件，有了这文件，你加密的Cookie能被任何人解密。</p>
+</li>
+<li><p>当然你可以不存储到文件，还有其他办法，具体参考：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/implementation/key-storage-providers">ASP.NET Core 中的密钥存储提供程序</a></p>
+</li>
+</ul>
+<h2 id="简单说说原理"><a href="#简单说说原理" class="headerlink" title="简单说说原理"></a>简单说说原理</h2><h3 id="默认Cookie不加密"><a href="#默认Cookie不加密" class="headerlink" title="默认Cookie不加密"></a>默认Cookie不加密</h3><p>当我们直接添加的Cookie默认是不经过加密的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HttpContext.Response.Cookies.Append(<span class="string">&quot;web_nmae&quot;</span>,<span class="string">&quot;MyWeb&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用ASP-NET-Core-Identity的认证信息Cookie加密"><a href="#使用ASP-NET-Core-Identity的认证信息Cookie加密" class="headerlink" title="使用ASP.NET Core Identity的认证信息Cookie加密"></a>使用ASP.NET Core Identity的认证信息Cookie加密</h3><p>但是当我们使用ASP.NET Core Identity时，对其存储到Cookie的认证信息ASP .NET Core会默认加密。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//注册</span></span><br><span class="line">services.AddAuthentication(config =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//但我们登陆后，设置Cookie</span></span><br><span class="line">    config.DefaultSignInScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">    <span class="comment">//使用作为验证是否登陆</span></span><br><span class="line">    config.DefaultAuthenticateScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">&#125;).AddCookie(<span class="string">&quot;MyCookieScheme&quot;</span>, options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(@&quot;C:\temp-keys\&quot;));</span></span><br><span class="line">    options.Cookie.Name = <span class="string">&quot;MyClientCookie&quot;</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//SignIn接口</span></span><br><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task&lt;ActionResult&gt; <span class="title">SignIn</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> claims = <span class="keyword">new</span> Claim[] &#123;</span><br><span class="line">            <span class="keyword">new</span> Claim(ClaimTypes.Name,<span class="string">&quot;singo&quot;</span>),</span><br><span class="line">            <span class="keyword">new</span> Claim(ClaimTypes.NameIdentifier,<span class="string">&quot;4433&quot;</span>),</span><br><span class="line">            <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;system&quot;</span>),</span><br><span class="line">            <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;admin&quot;</span>)</span><br><span class="line">        &#125;;</span><br><span class="line">    ClaimsIdentity claimsIdentity = <span class="keyword">new</span> ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);</span><br><span class="line">    <span class="keyword">var</span> claimsPrincipal = <span class="keyword">new</span> ClaimsPrincipal(claimsIdentity);</span><br><span class="line">    <span class="keyword">await</span> HttpContext.SignInAsync(claimsPrincipal);</span><br><span class="line">    <span class="keyword">return</span> Ok(<span class="string">&quot;SignIn成功&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line">[<span class="meta">Authorize</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> ActionResult <span class="title">SetCookie</span>(<span class="params"><span class="built_in">string</span> key,<span class="built_in">string</span> <span class="keyword">value</span></span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//使用该方法设置Cookie不会被加密</span></span><br><span class="line">    HttpContext.Response.Cookies.Append(key, <span class="keyword">value</span>);</span><br><span class="line">    <span class="keyword">return</span> Ok(<span class="string">&quot;SetCookie成功&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们调用SignIn接口，查看Cookies，就能发现一个Cookie项，其value被加密了。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">key: MyClientCookie</span><br><span class="line">value: CfDJ8FY8TudSY7lKgK5Kc1rjrPANTxtvOw87CVoObdVDdNug6_nTvgFZWRANLhPQBRrrhBQjWItfG51Xsdc1SaXDRTBDfxLWl-iSzKX5NnUUf3U9hM5ptcrXkPbDnvZKWtjtgr9gY1A5lIbqsZTjDwrQR5jNBxu81LzCz8_vJBRma2yrmjc9UIc_3vyxXX5pkMWk1Rt6-QHXFuRUdHbHjuN_jRckKFmzIUHJ_dlpzTGbhwTeMRLUJwAJT6zP56XeR_A_k00GEULumSHYqCopbhOKHe89kA75_tuj2Sg1EPVK0oJ1DfGIusleH3qdbWN4ZRsFQ0QLYdalm05i0r1nx_cbGJPQhT0thFqNj-zdOkXKaEEZvGrl6kSQr4NM0IhtBed2HeibJsw9gSKVCNiQAPTMVoGnVnM4cr6A1e6uyEn9CO4IB-VhjULeE8GT0BJ0nD6VatLKq6aXbxVS5Mwfnhs4ZgxpFJ_u-IY3hL3joOYfmAcIJi1R3XFypmPAAp3AeMHn9qIuxKpCDF8ybQSPqRn_wIfLA9KUt5WGlZX5y_nvdfiX-HaPEmytZtyi69k5MPZxmOAeTHh9r1i6HCRYN6veFmjDC7y7kJhSxvxiWePmTfHx</span><br></pre></td></tr></table></figure>
+
+<p>加密的依赖就是 <strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/introduction">Data Protection</a></strong></p>
+<blockquote>
+<p>Data Protection是微软提供的数据保护机制：</p>
+<p>为了确保Web应用敏感数据的安全存储，该机制提供了一个简单、基于非对称加密改进的、性能良好的、开箱即用的加密API用于数据保护。</p>
+<p>它不需要开发人员专门学习怎么样管理这些钥（公钥，私钥），系统回自动的选择算法和管理密钥的生命周期。理想情况下开发人员都不应该访问这些钥的原始文件。</p>
+</blockquote>
+<p>当我们使用ASP.NET Core Identity时，SignIn时会把认证信息给Data Protection加密然后存储到Cookie</p>
+<p>当我们获得其该Cookie进行认证时，该值又会被Data Protection给解密，默认该流程不需要用户设置，应用就会自动进行加解密。</p>
+<h3 id="关于Data-Protection可扩展阅读"><a href="#关于Data-Protection可扩展阅读" class="headerlink" title="关于Data Protection可扩展阅读"></a>关于Data Protection可扩展阅读</h3><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/savorboard/p/5778616.html">ASP.NET Core 数据保护（Data Protection）【上】</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/savorboard/p/dotnet-core-data-protection.html">ASP.NET Core 数据保护（Data Protection）【中】</a></p>
+<p>官方文档：</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/introduction">ASP.NET Core 数据保护</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ASP-NET-Core/" rel="tag"># ASP.NET Core</a>
+              <a href="/tags/Net-Core/" rel="tag"># .Net Core</a>
+              <a href="/tags/Data-Protection/" rel="tag"># Data Protection</a>
+              <a href="/tags/Cookie/" rel="tag"># Cookie</a>
+              <a href="/tags/%E8%A7%A3%E5%AF%86/" rel="tag"># 解密</a>
+              <a href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag"># 加密</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/+ASP.NETCore%E7%9A%84Filter/" rel="prev" title="ASP.NETCore的Filter">
+      <i class="fa fa-chevron-left"></i> ASP.NETCore的Filter
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie"><span class="nav-text">如何解密Cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E8%AF%B4%E8%AF%B4%E5%8E%9F%E7%90%86"><span class="nav-text">简单说说原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4Cookie%E4%B8%8D%E5%8A%A0%E5%AF%86"><span class="nav-text">默认Cookie不加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ASP-NET-Core-Identity%E7%9A%84%E8%AE%A4%E8%AF%81%E4%BF%A1%E6%81%AFCookie%E5%8A%A0%E5%AF%86"><span class="nav-text">使用ASP.NET Core Identity的认证信息Cookie加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EData-Protection%E5%8F%AF%E6%89%A9%E5%B1%95%E9%98%85%E8%AF%BB"><span class="nav-text">关于Data Protection可扩展阅读</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Singo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hushitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hushitong" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hushitong@163.com" title="E-Mail → mailto:hushitong@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hushitong@163.com</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">33k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">30 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

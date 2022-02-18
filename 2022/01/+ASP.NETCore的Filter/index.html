@@ -19,20 +19,20 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":260,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="什么是Filter过滤器（Filter）是 AOP[^AOP]思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。 下面图片显示了管道所在位置  通过使用过滤器可以实现 短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化 等，同时使业务代码更加简洁单纯，避免很多重复代码。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ASP.NETCore的Filter">
-<meta property="og:url" content="http://hushitong.github.io/2022/01/ASP.NETCore%E7%9A%84Filter/index.html">
+<meta property="og:url" content="http://hushitong.github.io/2022/01/+ASP.NETCore%E7%9A%84Filter/index.html">
 <meta property="og:site_name" content="Singo&#39;Sky">
 <meta property="og:description" content="什么是Filter过滤器（Filter）是 AOP[^AOP]思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。 下面图片显示了管道所在位置  通过使用过滤器可以实现 短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化 等，同时使业务代码更加简洁单纯，避免很多重复代码。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-1.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-2.jpg">
-<meta property="article:published_time" content="2022-01-29T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-29T16:00:00.000Z">
+<meta property="article:published_time" content="2022-01-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-24T16:00:00.000Z">
 <meta property="article:author" content="Singo">
 <meta property="article:tag" content="ASP.NET Core">
 <meta property="article:tag" content=".Net Core">
@@ -41,7 +41,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-1.png">
 
-<link rel="canonical" href="http://hushitong.github.io/2022/01/ASP.NETCore%E7%9A%84Filter/">
+<link rel="canonical" href="http://hushitong.github.io/2022/01/+ASP.NETCore%E7%9A%84Filter/">
 
 
 <script id="page-configurations">
@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -198,7 +198,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hushitong.github.io/2022/01/ASP.NETCore%E7%9A%84Filter/">
+    <link itemprop="mainEntityOfPage" href="http://hushitong.github.io/2022/01/+ASP.NETCore%E7%9A%84Filter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -221,7 +221,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2022-01-30 00:00:00" itemprop="dateCreated datePublished" datetime="2022-01-30T00:00:00+08:00">2022-01-30</time>
+              <time title="创建时间：2022-01-25 00:00:00" itemprop="dateCreated datePublished" datetime="2022-01-25T00:00:00+08:00">2022-01-25</time>
             </span>
 
           
@@ -262,34 +262,34 @@
 <p>通过使用过滤器可以实现 <strong>短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化</strong> 等，同时使业务代码更加简洁单纯，避免很多重复代码。</p>
 <span id="more"></span>
 
-<h2 id="5种Filter"><a href="#5种Filter" class="headerlink" title="5种Filter"></a>5种Filter</h2><ul>
-<li><p><strong>Authorizaion Filter</strong>：<strong>授权过滤器</strong></p>
+<h2 id="5种Filter"><a href="#5种Filter" class="headerlink" title="5种Filter"></a>5种Filter</h2><h3 id="简单概括"><a href="#简单概括" class="headerlink" title="简单概括"></a>简单概括</h3><ul>
+<li><p><strong>[Authorizaion Filter](#Authorizaion Filter)<strong>：</strong>授权过滤器</strong></p>
 <p>Authorization是五种Filter中最先运行的，用于确定是否已针对请求为用户授权。 如果请求未获授权，可以让管道短路。</p>
 <p><strong>作用</strong>：主要用于实现复杂的<code>权限角色认证</code>、<code>登陆授权</code>等操作。</p>
 </li>
-<li><p><strong>Resource Filter</strong>：<strong>资源过滤器</strong></p>
+<li><p><strong>[Resource Filter](#Resource Filter)<strong>：</strong>资源过滤器</strong></p>
 <p>OnResourceExecuting：在Authorization之后，Model Binding之前执行，对<strong>实现缓存或者对过滤管道进行短路</strong>特别有用。</p>
 <p>OnResourceExecuted：在管道的其余阶段完成之后运行代码。</p>
 <p><strong>作用</strong>：主要用于进行<code>资源缓存</code>、<code>防盗链</code>等操作。</p>
 </li>
-<li><p><strong>Exception Filter</strong>：<strong>异常过滤器</strong></p>
+<li><p><strong>[Exception Filter](#Exception Filter)<strong>：</strong>异常过滤器</strong></p>
 <p>异常处理的Filter，在向响应正文写入任何内容之前，对未经处理的异常应用全局策略。</p>
 <p><strong>作用</strong>：可以进行全局的<code>异常日志收集</code>、<code>错误信息友好化处理</code>等操作。</p>
 </li>
-<li><p><strong>Action Filter</strong>：<strong>操作过滤器</strong></p>
+<li><p><strong>[Action Filter](#Action Filter)<strong>：</strong>操作过滤器</strong></p>
 <p>最常使用的Filter，实际上包围了整个Action。</p>
 <p>OnActionExecuting：执行实际Action操作前触发，更改传递到操作中的参数。</p>
 <p>OnActionExecuted：执行实际Action操作后触发，更改从操作返回的结果。</p>
 <p><strong>作用</strong>：做法太多了，可以用于<code>执行操作日志</code>、<code>参数验证</code>，<code>权限控制</code>等一系列操作。</p>
 </li>
-<li><p><strong>Result Filter</strong>：<strong>结果过滤器</strong></p>
+<li><p><strong>[Result Filter](#Result Filter)<strong>：</strong>结果过滤器</strong></p>
 <p>在执行操作结果之前和之后立即运行代码。<strong>仅当操作方法成功执行时，它们才会运行</strong>。对于必须围绕视图或格式化程序的执行的逻辑，它们很有用。</p>
 <p>OnResultExecuting：在操作结果执行之前调用。</p>
 <p>OnResultExecuted：在操作结果执行之后调用。</p>
 <p><strong>作用</strong>：可以对结果进行<code>格式化</code>、<code>大小写转换</code>、<code>缓存结果</code>等一系列操作。</p>
 </li>
 </ul>
-<p>下图是我自制的一个比较完整的请求在<code>Filter Pipeline</code>中的流动的流程图。</p>
+<h3 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h3><p>下图是我自制的一个比较完整的请求在<code>Filter Pipeline</code>中的流动的流程图。</p>
 <p>需要特别注意的是<code>Exception Filter</code>的位置：</p>
 <ul>
 <li><p>在<strong>它位置之下</strong>的流程中抛出的错误才会被其捕捉处理，然后再流经<code>Resource Filter</code>的<code>OnResourceExecuted</code>方法后出去。</p>
@@ -419,7 +419,10 @@
     <a href="/2022/01/+ASP.NETCore%E7%BC%93%E5%AD%98/" rel="prev" title="ASP.NET Core缓存">
       <i class="fa fa-chevron-left"></i> ASP.NET Core缓存
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/+ASP.NETCore%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie/" rel="next" title="ASP.NETCore如何解密Cookie">
+      ASP.NETCore如何解密Cookie <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -478,7 +481,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFFilter"><span class="nav-text">什么是Filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%E7%A7%8DFilter"><span class="nav-text">5种Filter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Authorizaion-Filter"><span class="nav-text">Authorizaion Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Resource-Filter"><span class="nav-text">Resource Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exception-Filter"><span class="nav-text">Exception Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Action-Filter"><span class="nav-text">Action Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Result-Filter"><span class="nav-text">Result Filter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">Filter的注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Action%E6%B3%A8%E5%86%8C"><span class="nav-text">Action注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Controller%E6%B3%A8%E5%86%8C"><span class="nav-text">Controller注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E6%B3%A8%E5%86%8C"><span class="nav-text">全局注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TypeFilter-%E5%92%8C-ServiceFilter-%E6%B3%A8%E5%86%8C%E6%96%B9%E5%BC%8F"><span class="nav-text">TypeFilter 和 ServiceFilter 注册方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%80%A7%E5%8C%96"><span class="nav-text">特性化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-text">Filter的执行顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84Filter%E4%B8%8D%E5%90%8C%E6%B3%A8%E5%86%8C%E6%96%B9%E5%BC%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-text">相同类型的Filter不同注册方式的执行顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-text">改变执行顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFFilter"><span class="nav-text">什么是Filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%E7%A7%8DFilter"><span class="nav-text">5种Filter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%A6%82%E6%8B%AC"><span class="nav-text">简单概括</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-text">流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Authorizaion-Filter"><span class="nav-text">Authorizaion Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Resource-Filter"><span class="nav-text">Resource Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exception-Filter"><span class="nav-text">Exception Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Action-Filter"><span class="nav-text">Action Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Result-Filter"><span class="nav-text">Result Filter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">Filter的注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Action%E6%B3%A8%E5%86%8C"><span class="nav-text">Action注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Controller%E6%B3%A8%E5%86%8C"><span class="nav-text">Controller注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E6%B3%A8%E5%86%8C"><span class="nav-text">全局注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TypeFilter-%E5%92%8C-ServiceFilter-%E6%B3%A8%E5%86%8C%E6%96%B9%E5%BC%8F"><span class="nav-text">TypeFilter 和 ServiceFilter 注册方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%80%A7%E5%8C%96"><span class="nav-text">特性化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-text">Filter的执行顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84Filter%E4%B8%8D%E5%90%8C%E6%B3%A8%E5%86%8C%E6%96%B9%E5%BC%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-text">相同类型的Filter不同注册方式的执行顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-text">改变执行顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -492,7 +495,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -505,7 +508,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -549,14 +552,14 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">28k</span>
+    <span title="站点总字数">33k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">26 分钟</span>
+    <span title="站点阅读时长">30 分钟</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
 
         
@@ -602,7 +605,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>

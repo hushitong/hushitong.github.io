@@ -67,145 +67,46 @@
       </tags>
   </entry>
   <entry>
-    <title>ASP.NET Core缓存</title>
-    <url>/2022/01/+ASP.NETCore%E7%BC%93%E5%AD%98/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改且 <strong>生成成本高</strong> 的数据。 Caching可比从源返回快得多的数据副本。</p>
-<p>ASP.NET Core支持多个不同的缓存</p>
-<ul>
-<li>客户端缓存 Cache-control</li>
-<li>服务器端响应缓存 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/middleware">ResponseCaching</a></li>
-<li>内存缓存  <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/memory">In-MemoryCache</a></li>
-<li>分布式缓存 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed">DistributedCache</a></li>
-</ul>
+    <title>ASP.NETCore如何解密Cookie</title>
+    <url>/2022/02/+ASP.NETCore%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>事情的起点就在于我在弄ASP .NET Core下的OAuth2.0流程，想要看看具体的Cookie信息有哪些，发现Cookie信息被加密了，检索了一番，发现了解决办法 <a href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie">如何解密Cookie</a> ，然后顺便找了一下原理。</p>
+<h2 id="如何解密Cookie"><a href="#如何解密Cookie" class="headerlink" title="如何解密Cookie"></a>如何解密Cookie</h2><p>主要代码来源：<a href="https://stackoverflow.com/questions/42842511/how-to-manually-decrypt-an-asp-net-core-authentication-cookie">How to manually decrypt an ASP.NET Core Authentication cookie?</a></p>
 <span id="more"></span>
 
-<h2 id="缓存准则"><a href="#缓存准则" class="headerlink" title="缓存准则"></a>缓存准则</h2><ul>
-<li>代码应始终具有用于提取数据的选项，而不是依赖于可用的缓存值。</li>
-<li>缓存的是内存资源，内存资源是有限的因此需要限制缓存增长：<ul>
-<li>请勿将外部输入用作缓存Key，如果任由外部输入作为Key，那缓存很容易就会被恶意刷爆。</li>
-<li>使用过期时间策略限制缓存增长，这能够及时释放不活跃的缓存，及时释放内存空间。</li>
-<li><a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/memory?view=aspnetcore-3.1#use-setsize-size-and-sizelimit-to-limit-cache-size">使用 SetSize、Size 和 SizeLimit 限制缓存大小</a>。 ASP.NET Core运行时 <strong>不会根据</strong> 内存压力限制缓存大小。 由开发人员限制缓存大小。</li>
-</ul>
+<ol>
+<li><p><code>Startup.CongigureServices</code>里注册的部分代码</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">services.AddAuthentication(config =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//但我们登陆后，设置Cookie</span></span><br><span class="line">    config.DefaultSignInScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">    <span class="comment">//使用作为验证是否登陆</span></span><br><span class="line">    config.DefaultAuthenticateScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">&#125;).AddCookie(<span class="string">&quot;MyCookieScheme&quot;</span>, options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//设置密钥存储位置，你也可以使用services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@&quot;C:\temp-keys2\&quot;))</span></span><br><span class="line">    options.DataProtectionProvider = DataProtectionProvider.Create(<span class="keyword">new</span> DirectoryInfo(<span class="string">@&quot;C:\temp-keys\&quot;</span>));</span><br><span class="line">    options.Cookie.Name = <span class="string">&quot;MyClientCookie&quot;</span>; <span class="comment">//默认为：.AspNetCore.Cookies</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>解密Cookie</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">DecryptCookie</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//获得加密了的Cookie值，Cookie名假如注册时候没指定的话为：.AspNetCore.Cookies</span></span><br><span class="line">    <span class="built_in">string</span> cookieValue = HttpContext.Request.Cookies[<span class="string">&quot;MyClientCookie&quot;</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//使用Create方法生成DataProtectionProvider对象，密钥存储位置值与在ConfigureServices注册时一致</span></span><br><span class="line">    <span class="keyword">var</span> provider = DataProtectionProvider.Create(<span class="keyword">new</span> DirectoryInfo(<span class="string">@&quot;C:\temp-keys\&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获得DataProtector对象，第二个参数的值你在注册Cookies时候设定的Scheme名，没有设定的话其默认值为：Cookies</span></span><br><span class="line">    <span class="keyword">var</span> dataProtector = provider.CreateProtector(<span class="string">&quot;Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationMiddleware&quot;</span>, <span class="string">&quot;MyCookieScheme&quot;</span>, <span class="string">&quot;v2&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//解密Cookie值，变为普通文本</span></span><br><span class="line">    <span class="built_in">byte</span>[] protectedBytes = Base64UrlTextEncoder.Decode(cookieValue);</span><br><span class="line">    <span class="built_in">byte</span>[] plainBytes = dataProtector.Unprotect(protectedBytes);</span><br><span class="line">    <span class="built_in">string</span> plainText = Encoding.UTF8.GetString(plainBytes);</span><br><span class="line">    <span class="comment">//上面的Encoding.UTF8.GetString不行的话使用下面的</span></span><br><span class="line">    <span class="comment">//UTF8Encoding specialUtf8Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);</span></span><br><span class="line">    <span class="comment">//string plainText = specialUtf8Encoding.GetString(plainBytes);</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//或解密Cookie值，转换为AuthenticationTicket对象</span></span><br><span class="line">    TicketDataFormat ticketDataFormat = <span class="keyword">new</span> TicketDataFormat(dataProtector);</span><br><span class="line">    AuthenticationTicket ticket = ticketDataFormat.Unprotect(cookieValue);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Ok(JsonConvert.SerializeObject(ticket.Properties.Items));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>注意</strong>：</p>
+<ul>
+<li><p>最重要的是设置保存到 <code>C:\temp-keys\</code> 下的私钥文件，有了这文件，你加密的Cookie能被任何人解密。</p>
+</li>
+<li><p>当然你可以不存储到文件，还有其他办法，具体参考：<a href="https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/implementation/key-storage-providers">ASP.NET Core 中的密钥存储提供程序</a></p>
 </li>
 </ul>
-<h2 id="客户端缓存-Cache-control"><a href="#客户端缓存-Cache-control" class="headerlink" title="客户端缓存 Cache-control"></a>客户端缓存 Cache-control</h2><p>Http协议中规定，服务器端通过返回报文头添加Cache-control，来达到通知客户端进行缓存，如：<code>Cache-control:max-age=30</code>，表示让客户端缓存该内容30秒（当然客户端也可以不干）。</p>
-<p>在ASP.NET Core中，可以通过添加<code>ResponseCacheAttribute</code>这个Attribute，让程序在返回时的添加报文头<code>Cache-control</code>。</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ValuesController</span> : <span class="title">Controller</span></span><br><span class="line">&#123;  </span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    [<span class="meta">ResponseCache(Duration = 30)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult&lt;<span class="built_in">bool</span>&gt; <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> accId</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> accountService.Validate(accID);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="简单说说原理"><a href="#简单说说原理" class="headerlink" title="简单说说原理"></a>简单说说原理</h2><h3 id="默认Cookie不加密"><a href="#默认Cookie不加密" class="headerlink" title="默认Cookie不加密"></a>默认Cookie不加密</h3><p>当我们直接添加的Cookie默认是不经过加密的。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">HttpContext.Response.Cookies.Append(<span class="string">&quot;web_nmae&quot;</span>,<span class="string">&quot;MyWeb&quot;</span>);</span><br></pre></td></tr></table></figure>
 
-<p>客户端缓存只对本客户端有效，在你使用另一个客户端发出一样的请求是，你就会发现访问的不是缓存了的数据，而是最新数据。这时候就需要使用服务端缓存了。</p>
-<h2 id="服务器端响应缓存-ResponseCaching"><a href="#服务器端响应缓存-ResponseCaching" class="headerlink" title="服务器端响应缓存 ResponseCaching"></a>服务器端响应缓存 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/middleware">ResponseCaching</a></h2><p>ASP.NET Core不但可以设置浏览器缓存，还可以设置服务器端的响应缓存，当请求某资源时，响应的内容会被服务器进行缓存，在缓存有效期内，就算不同客户端获取同一资源也不会真的进入该资源地址获取数据，而是由缓存直接返回内容。</p>
-<p>要使用服务器缓存，需要以下步骤：</p>
-<ol>
-<li><p>在<code>Startup.ConfigureServices</code>中添加：</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">services.AddResponseCaching();</span><br></pre></td></tr></table></figure></li>
-<li><p>在<code>Startup.Configure</code>中添加：</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">app.UseResponseCaching();</span><br></pre></td></tr></table></figure></li>
-<li><p>同样需要添加<code>ResponseCacheAttribute</code>这个Attribute：</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ValuesController</span> : <span class="title">Controller</span></span><br><span class="line">&#123;  </span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    [<span class="meta">ResponseCache(Duration = 30)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult&lt;<span class="built_in">bool</span>&gt; <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> accId</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> accountService.Validate(accID);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p>这时候你通过同一客户端多次访问该资源发现第二次以后的访问的是客户端缓存，通过不同客户端访问的是服务器缓存的内容。</p>
-<p>虽然服务器端响应缓存看起来很美好，不过实际上有点中看不中用，应为其生效是有条件的，而且还挺苛刻，实际上只要请求的报文头加上<code>Cache-Control:no-cache</code>，就可以让服务器响应缓存失效。所以一般我们更加依赖于：<code>内存缓存</code>、<code>分布式缓存</code>。</p>
-<h3 id="缓存条件"><a href="#缓存条件" class="headerlink" title="缓存条件"></a>缓存条件</h3><ul>
-<li>请求必须生成状态代码为”正常”的 200 (服务器) 响应。</li>
-<li>请求方法必须是 GET 或 HEAD。</li>
-<li>在 <code>Startup.Configure</code> 中，Caching中间件的中间件之前必须放置需要缓存的中间件。 有关详细信息，请参阅 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/middleware/?view=aspnetcore-3.1">ASP.NET Core 中间件</a>。</li>
-<li><code>Authorization</code>标头不能存在。</li>
-<li><code>Cache-Control</code> 标头参数必须有效，并且响应必须标记 <code>public</code> 且未标记为 <code>private</code> 。</li>
-<li>如果标头不存在，则标头不得存在，因为标头 <code>Pragma: no-cache</code> <code>Cache-Control</code> 将替代标头（ <code>Cache-Control</code> <code>Pragma</code> 如果存在）。</li>
-<li><code>Set-Cookie</code>标头不能存在。</li>
-<li><code>Vary</code> 标头参数必须有效且不等于 <code>*</code> 。</li>
-<li>如果 <code>Content-Length</code> 设置了 (标头值) 必须与响应正文的大小匹配。</li>
-<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.aspnetcore.http.features.ihttpsendfilefeature">IHttpSendFileFeature</a>未使用 。</li>
-<li>响应不能像 标头和 和 缓存 <code>Expires</code> 指令所指定 <code>max-age</code> 一 <code>s-maxage</code> 样过时。</li>
-<li>响应缓冲必须成功。 响应的大小必须小于配置的 或默认的 <a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.aspnetcore.responsecaching.responsecachingoptions.sizelimit#Microsoft_AspNetCore_ResponseCaching_ResponseCachingOptions_SizeLimit">SizeLimit</a> 。 响应的正文大小必须小于配置的 或默认的 <a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.aspnetcore.responsecaching.responsecachingoptions.maximumbodysize#Microsoft_AspNetCore_ResponseCaching_ResponseCachingOptions_MaximumBodySize">MaximumBodySize</a> 。</li>
-<li>响应必须可缓存，符合 <a href="https://tools.ietf.org/html/rfc7234">RFC 7234</a> 规范。 例如，指令 <code>no-store</code> 不得存在于请求或响应标头字段中。 有关详细信息 <em>，请参阅第 3</em> 部分：在 <a href="https://tools.ietf.org/html/rfc7234">RFC 7234</a> 的缓存中存储响应。</li>
-</ul>
-<h2 id="内存缓存-IMemoryCache"><a href="#内存缓存-IMemoryCache" class="headerlink" title="内存缓存  IMemoryCache"></a>内存缓存  <a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.extensions.caching.memory.imemorycache">IMemoryCache</a></h2><p>内存缓存是数据保存在当前运行的网站的内存中，是与进程相关的。而由于在Web服务器中，多个不同网站时运行在不同进程中的，因此不同网站的内存时不会互相干扰的，也就意味着不能直接访问不在同一进程中的其他应用程序的内存缓存，然后需要注意的是网站重启后，内存缓存中的数据会被情况。</p>
-<p><a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.caching">System.Runtime.Caching</a>/<a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.caching.memorycache">MemoryCache</a></p>
-<p>要使用内存缓存，需要：</p>
-<ol>
-<li><p>在<code>Startup.ConfigureServices</code>中添加：</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">services.AddMemoryCache();</span><br></pre></td></tr></table></figure></li>
-<li><p>注入<code>IMemoryCache</code></p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> IMemoryCache _cache;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">MemoryCacheController</span>(<span class="params">IMemoryCache memoryCache</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    _cache = memoryCache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>使用<code>TryGetValue</code>、<code>Remove</code>、<code>Set</code>、<code>GetOrCreate</code>等方法操作MemoryCache</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MemoryCacheController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> IMemoryCache _cache;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MemoryCacheController</span>(<span class="params">IMemoryCache memoryCache</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache = memoryCache;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> id</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> strName = <span class="string">&quot;未知&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//方法一、使用TryGetValue与Set</span></span><br><span class="line">        <span class="comment">//if (!_cache.TryGetValue(&quot;Name&quot;, out strName))</span></span><br><span class="line">        <span class="comment">//&#123;</span></span><br><span class="line">        <span class="comment">//    strName = GetNmae(id);</span></span><br><span class="line">        <span class="comment">//    _cache.Set(&quot;Name&quot;, strName);</span></span><br><span class="line">        <span class="comment">//&#125;</span></span><br><span class="line">        <span class="comment">//方法二、使用GetOrCreate</span></span><br><span class="line">        <span class="comment">//strName = _cache.GetOrCreate&lt;string&gt;(&quot;Name&quot;, (e) =&gt; &#123; return GetNmae(id); &#125;);</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> strName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Remove&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Remove</span>(<span class="params"><span class="built_in">string</span> cacheName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache.Remove(cacheName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetNmae</span>(<span class="params"><span class="built_in">int</span> id</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">switch</span> (id)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>: <span class="keyword">return</span> <span class="string">&quot;Singo&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>: <span class="keyword">return</span> <span class="string">&quot;古月&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            <span class="literal">default</span>: <span class="keyword">return</span> <span class="string">&quot;无名&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p>访问<code>Get</code>方法获得数据并设置一个名字为”Name”的MemoryCache，在过期前再次访问获得的都是MemoryCache里的数据，可以通过访问<code>Remove</code>方法，传入参数”Name”，即可清除名字为”Name”的MemoryCache。</p>
-<h3 id="过期时间策略"><a href="#过期时间策略" class="headerlink" title="过期时间策略"></a>过期时间策略</h3><p>默认情况下内存缓存是不会过期的，因此我们可以通过<code>Remove</code>方法删除缓存，或者使用<code>Set</code>方法重新设置缓存，不过在实际应用中大部分时间不会这么做，因为这么弄很麻烦，更常用的办法时使用过期时间来管理。</p>
-<p>过期时间策略有两种</p>
-<ul>
-<li><p>绝对过期时间，通过设置<code>ICacheEntry.AbsoluteExpirationRelativeToNow</code>(过多少时间后失效)或<code>ICacheEntry.AbsoluteExpiration</code>(什么时间点失效)。</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//不会过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123; <span class="keyword">return</span> GetNmae(id); &#125;);</span><br><span class="line"><span class="comment">//5秒后过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//在今天晚上23点失效</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpiration = System.DateTime.Today.AddHours(<span class="number">23</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-<li><p>滑动过期时间，通过设置<code>ICacheEntry.SlidingExpiration</code>(过多少时间后失效，但是如果在失效前一直有访问尽量，那就会延长设置的时间（注意是在被访问的时间点上），直到过期。</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//5秒后过期，假如在过期前被访问，以被访问时间点位基准再次延迟5秒，直到过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-<li><p>不过可以混用两种策略，让缓存数据能够在滑动过期时间的基础上，通过设置绝对过期时间来达到强制刷新数据的目的，也就是说在绝对过期时间这个点数据必定过期，滑动时间影响不了。</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//混用绝对过期时间与滑动过期时间</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">15</span>);  <span class="comment">//绝对过期时间15秒</span></span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);  <span class="comment">//滑动过期时间5秒</span></span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="分布式缓存-DistributedCache"><a href="#分布式缓存-DistributedCache" class="headerlink" title="分布式缓存 DistributedCache"></a>分布式缓存 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed">DistributedCache</a></h2><p>内存缓存在比较简单的应用里是足够使用的，但是对于现在需要多台服务器进行负载均衡的架构环境中就显得有点不太够用，如会出现：缓存内容不一致、多台服务器缓存同一内容浪费内存空间等问题，因此需要一个独立的统一的缓存存储中心，以便让所有的Web服务器共享同一份缓存数据，我们将这种缓存形式称为<strong>分布式缓存</strong>。</p>
-<p>有关.NET Core的分布式缓存如下：</p>
-<ul>
-<li><p>.NET Core没有内置分布式缓存，但是却提供了统一的分布式缓存服务器的操作接口IDistributedCache，用法实际与内存缓存类似。</p>
-</li>
-<li><p>可以使用常用分布式缓存如<a href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.StackExchangeRedis">Redis</a>、<a href="https://www.nuget.org/packages/NCache.Microsoft.Extensions.Caching.OpenSource">NCache</a>、<a href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.SqlServer">SQL Server</a>、<a href="https://www.nuget.org/packages/EnyimMemcachedCore/">Memcached</a>等。</p>
-<p><a href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.SqlServer">SQL Server</a>：缓存性能并不好，基本不考虑。</p>
-<p><a href="https://www.nuget.org/packages/EnyimMemcachedCore/">Memcached</a>：缓存专用，性能非常高能，可惜对集群、高可用方面支持比较弱，而且有<em>缓存键最大长度为250字节</em>（以前做项目刚用时就被坑过，超过了就直接截断，也没报错提醒）、*<em>最大只能存储1MB的单个item</em>等限制。</p>
-<p><a href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.StackExchangeRedis">Redis</a>：虽然做缓存服务器的性能比Memcached稍差，但是其高可用、集群等方面非常强大，适合在数据量大及集群等场景使用，并且缓存外的功能也很强大，还能做消息队列等。</p>
-<p><a href="https://www.nuget.org/packages/NCache.Microsoft.Extensions.Caching.OpenSource">NCache</a>：它是一个高性能的、分布式的、可扩展的、天生为.Net设计的缓存框架，NCache不仅比 Redis 快，而且还提供了一些Redis所不具有的分布式特性。</p>
-</li>
-<li><p>分布式缓存其缓存值的类型为<code>byte[]</code>，虽然也提供了接受string的类型的方法，但是最终都会转换为<code>byte[]</code>，而且本身IDistributedCache提供的方法有限，最好扩展IDistributedCache的方法。</p>
-</li>
-</ul>
-<h3 id="IDistributedCache接口包含以下方法"><a href="#IDistributedCache接口包含以下方法" class="headerlink" title="IDistributedCache接口包含以下方法"></a>IDistributedCache接口包含以下方法</h3><ul>
-<li><p>Get、GetAsync</p>
-<p>  采用字符串键并以byte[]形式检索缓存项（如果在缓存中找到）。</p>
-</li>
-<li><p>Set、SetAsync</p>
-<p>  使用字符串键向缓存添加项byte[]形式）。</p>
-</li>
-<li><p>Refresh、RefreshAsync</p>
-<p>  根据键刷新缓存中的项，并重置其可调过期超时值（如果有）。</p>
-</li>
-<li><p>Remove、RemoveAsync</p>
-<p>  根据键删除缓存项。</p>
-</li>
-</ul>
-<h3 id="Redis-分布式缓存"><a href="#Redis-分布式缓存" class="headerlink" title="Redis 分布式缓存"></a>Redis 分布式缓存</h3><ol>
-<li><p>安装Redis相关包，这个包是微软提供的</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">install-package</span> Microsoft.Extensions.Caching.StackExchangeRedis</span><br><span class="line">//注意以前使用的是：Microsoft.Extensions.Caching.Redis包，不过这个包<span class="number">2018</span>年后就没更新了</span><br></pre></td></tr></table></figure></li>
-<li><p>在<code>Startup.ConfigureServices</code>中注册</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Use Redis</span></span><br><span class="line">services.AddStackExchangeRedisCache(options =&gt; &#123;</span><br><span class="line">    options.Configuration = <span class="string">&quot;localhost&quot;</span>;  <span class="comment">//使用本地</span></span><br><span class="line">    options.InstanceName = <span class="string">&quot;SampleInstance_&quot;</span>;  <span class="comment">//添加前缀可以区别于其他应用来的数据</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-<li><p>注入</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> IDistributedCache _cache;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">RedisController</span>(<span class="params">IDistributedCache cache</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    _cache = cache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>使用</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">RedisController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> IDistributedCache _cache;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RedisController</span>(<span class="params">IDistributedCache cache</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache = cache;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Get&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Get</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//获取</span></span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Set&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Set</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (obj == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">int</span> absoluteExpirationRelativeToNowSec = <span class="number">100</span>;</span><br><span class="line">            <span class="built_in">int</span> slidingExpirationSec = <span class="number">50</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//添加，注意：添加Redis后的类型是hash</span></span><br><span class="line">            <span class="comment">//默认没有过期时间</span></span><br><span class="line">            <span class="comment">//_cache.Set(&quot;id1&quot;, Encoding.Default.GetBytes(&quot;永不过期，缓存时间是：&#123;DateTime.Now.ToLongTimeString()&#125;&quot;), new DistributedCacheEntryOptions &#123; &#125;);</span></span><br><span class="line">            <span class="comment">//同样可以设置绝对过期时间与滑动过期时间</span></span><br><span class="line">            _cache.Set(</span><br><span class="line">                <span class="string">&quot;id1&quot;</span>,</span><br><span class="line">                Encoding.Default.GetBytes(<span class="string">$&quot;缓存时间是：<span class="subst">&#123;DateTime.Now.ToLongTimeString()&#125;</span>，过期时间是：<span class="subst">&#123;DateTime.Now.AddSeconds(absoluteExpirationRelativeToNowSec).ToLongTimeString()&#125;</span>&quot;</span>),</span><br><span class="line">                <span class="keyword">new</span> DistributedCacheEntryOptions</span><br><span class="line">                &#123;</span><br><span class="line">                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(absoluteExpirationRelativeToNowSec),</span><br><span class="line">                    SlidingExpiration = TimeSpan.FromSeconds(slidingExpirationSec)</span><br><span class="line">                &#125;</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Del&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Del</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//移除</span></span><br><span class="line">        _cache.Remove(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Refresh&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Refresh</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//刷新，Get命令同样会刷新滑动过期时间</span></span><br><span class="line">        _cache.Refresh(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h2><h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>访问一个缓存和数据库都不存在的key，由于该key注定获得不了数据，因此不会被写缓存，永远都会直接访问到数据库上。这种缓存永远起不了作用，直接被”穿透“到数据库的情况，被称为缓存穿透。</p>
-<p> <strong>解决方案</strong>：</p>
-<ul>
-<li>接口层增加校验，如用户鉴权校验，id做基础校验，id&lt;=0的直接拦截；</li>
-<li>当出现这种请求时，也将其缓存，其key为请求的key，value为null，但是缓存有效时间设置短点，如30秒（设置太长会导致正常情况也没法使用）。这样可以防止攻击用户反复用同一个id暴力攻击。</li>
-</ul>
-<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>某一个热点key，在缓存过期的一瞬间，同时有大量的请求打进来，由于此时缓存过期了，所以请求最终都会走到数据库，造成瞬时数据库请求量大、压力骤增，甚至可能打垮数据库。</p>
-<p><strong>解决方案</strong>：</p>
-<ul>
-<li><strong>加互斥锁</strong>。在并发的多个请求中，只有第一个请求线程能拿到锁并执行数据库查询操作，其他的线程拿不到锁就阻塞等着，等到第一个线程将数据写入缓存后，直接走缓存。</li>
-<li><strong>热点数据不过期</strong>。直接将缓存设置为不过期，然后由定时任务去异步加载数据，更新缓存。</li>
-</ul>
-<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>  缓存雪崩是由于原有缓存失效(过期)，新缓存未到期间。所有请求都去查询数据库，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</p>
-<p><strong>解决方案</strong>：</p>
-<ul>
-<li><p><strong>加互斥锁</strong>。同<a href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF">缓存击穿</a>的。</p>
-</li>
-<li><p><strong>热点数据不过期</strong>。同<a href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF">缓存击穿</a>的。</p>
-</li>
-<li><p><strong>错开过期时间</strong>。在基础过期时间的基础上，加上一个随机时间，防止同一时间大量数据过期现象发生。如：本来统一设置位3分钟的，变为3分钟加1-15秒的随机数。</p>
-</li>
-</ul>
-<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>本文章是基本上是基于ASP.NET Core3.1版本编写，其后续版本可能发生变化，具体使用请去<a href="https://docs.microsoft.com/en-us/aspnet/core/performance/caching/overview">微软官方文档</a>查看。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://docs.microsoft.com/en-us/aspnet/core/performance/caching/overview">微软官方文档</a></p>
-<p><a href="https://www.bilibili.com/video/BV1pK41137He">.NET 6教程，.Net Core 2022视频教程，杨中科主讲</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/359118610">缓存穿透、缓存击穿、缓存雪崩解决方案</a></p>
+<h3 id="使用ASP-NET-Core-Identity的认证信息Cookie加密"><a href="#使用ASP-NET-Core-Identity的认证信息Cookie加密" class="headerlink" title="使用ASP.NET Core Identity的认证信息Cookie加密"></a>使用ASP.NET Core Identity的认证信息Cookie加密</h3><p>但是当我们使用ASP.NET Core Identity时，对其存储到Cookie的认证信息ASP .NET Core会默认加密。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//注册</span></span><br><span class="line">services.AddAuthentication(config =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//但我们登陆后，设置Cookie</span></span><br><span class="line">    config.DefaultSignInScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">    <span class="comment">//使用作为验证是否登陆</span></span><br><span class="line">    config.DefaultAuthenticateScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">&#125;).AddCookie(<span class="string">&quot;MyCookieScheme&quot;</span>, options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(@&quot;C:\temp-keys\&quot;));</span></span><br><span class="line">    options.Cookie.Name = <span class="string">&quot;MyClientCookie&quot;</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//SignIn接口</span></span><br><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task&lt;ActionResult&gt; <span class="title">SignIn</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> claims = <span class="keyword">new</span> Claim[] &#123;</span><br><span class="line">            <span class="keyword">new</span> Claim(ClaimTypes.Name,<span class="string">&quot;singo&quot;</span>),</span><br><span class="line">            <span class="keyword">new</span> Claim(ClaimTypes.NameIdentifier,<span class="string">&quot;4433&quot;</span>),</span><br><span class="line">            <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;system&quot;</span>),</span><br><span class="line">            <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;admin&quot;</span>)</span><br><span class="line">        &#125;;</span><br><span class="line">    ClaimsIdentity claimsIdentity = <span class="keyword">new</span> ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);</span><br><span class="line">    <span class="keyword">var</span> claimsPrincipal = <span class="keyword">new</span> ClaimsPrincipal(claimsIdentity);</span><br><span class="line">    <span class="keyword">await</span> HttpContext.SignInAsync(claimsPrincipal);</span><br><span class="line">    <span class="keyword">return</span> Ok(<span class="string">&quot;SignIn成功&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line">[<span class="meta">Authorize</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> ActionResult <span class="title">SetCookie</span>(<span class="params"><span class="built_in">string</span> key,<span class="built_in">string</span> <span class="keyword">value</span></span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//使用该方法设置Cookie不会被加密</span></span><br><span class="line">    HttpContext.Response.Cookies.Append(key, <span class="keyword">value</span>);</span><br><span class="line">    <span class="keyword">return</span> Ok(<span class="string">&quot;SetCookie成功&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们调用SignIn接口，查看Cookies，就能发现一个Cookie项，其value被加密了。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">key: MyClientCookie</span><br><span class="line">value: CfDJ8FY8TudSY7lKgK5Kc1rjrPANTxtvOw87CVoObdVDdNug6_nTvgFZWRANLhPQBRrrhBQjWItfG51Xsdc1SaXDRTBDfxLWl-iSzKX5NnUUf3U9hM5ptcrXkPbDnvZKWtjtgr9gY1A5lIbqsZTjDwrQR5jNBxu81LzCz8_vJBRma2yrmjc9UIc_3vyxXX5pkMWk1Rt6-QHXFuRUdHbHjuN_jRckKFmzIUHJ_dlpzTGbhwTeMRLUJwAJT6zP56XeR_A_k00GEULumSHYqCopbhOKHe89kA75_tuj2Sg1EPVK0oJ1DfGIusleH3qdbWN4ZRsFQ0QLYdalm05i0r1nx_cbGJPQhT0thFqNj-zdOkXKaEEZvGrl6kSQr4NM0IhtBed2HeibJsw9gSKVCNiQAPTMVoGnVnM4cr6A1e6uyEn9CO4IB-VhjULeE8GT0BJ0nD6VatLKq6aXbxVS5Mwfnhs4ZgxpFJ_u-IY3hL3joOYfmAcIJi1R3XFypmPAAp3AeMHn9qIuxKpCDF8ybQSPqRn_wIfLA9KUt5WGlZX5y_nvdfiX-HaPEmytZtyi69k5MPZxmOAeTHh9r1i6HCRYN6veFmjDC7y7kJhSxvxiWePmTfHx</span><br></pre></td></tr></table></figure>
+
+<p>加密的依赖就是 <strong><a href="https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/introduction">Data Protection</a></strong></p>
+<blockquote>
+<p>Data Protection是微软提供的数据保护机制：</p>
+<p>为了确保Web应用敏感数据的安全存储，该机制提供了一个简单、基于非对称加密改进的、性能良好的、开箱即用的加密API用于数据保护。</p>
+<p>它不需要开发人员专门学习怎么样管理这些钥（公钥，私钥），系统回自动的选择算法和管理密钥的生命周期。理想情况下开发人员都不应该访问这些钥的原始文件。</p>
+</blockquote>
+<p>当我们使用ASP.NET Core Identity时，SignIn时会把认证信息给Data Protection加密然后存储到Cookie</p>
+<p>当我们获得其该Cookie进行认证时，该值又会被Data Protection给解密，默认该流程不需要用户设置，应用就会自动进行加解密。</p>
+<h3 id="关于Data-Protection可扩展阅读"><a href="#关于Data-Protection可扩展阅读" class="headerlink" title="关于Data Protection可扩展阅读"></a>关于Data Protection可扩展阅读</h3><p><a href="https://www.cnblogs.com/savorboard/p/5778616.html">ASP.NET Core 数据保护（Data Protection）【上】</a></p>
+<p><a href="https://www.cnblogs.com/savorboard/p/dotnet-core-data-protection.html">ASP.NET Core 数据保护（Data Protection）【中】</a></p>
+<p>官方文档：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/introduction">ASP.NET Core 数据保护</a></p>
 ]]></content>
       <categories>
         <category>Dev</category>
@@ -215,47 +116,49 @@
       <tags>
         <tag>ASP.NET Core</tag>
         <tag>.Net Core</tag>
-        <tag>Caching</tag>
-        <tag>缓存</tag>
+        <tag>Data Protection</tag>
+        <tag>Cookie</tag>
+        <tag>解密</tag>
+        <tag>加密</tag>
       </tags>
   </entry>
   <entry>
     <title>ASP.NETCore的Filter</title>
-    <url>/2022/01/ASP.NETCore%E7%9A%84Filter/</url>
+    <url>/2022/01/+ASP.NETCore%E7%9A%84Filter/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是Filter"><a href="#什么是Filter" class="headerlink" title="什么是Filter"></a>什么是Filter</h2><p>过滤器（Filter）是 AOP[^AOP]思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。</p>
 <p>下面图片显示了管道所在位置</p>
 <p><img src="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-1.png" alt="aspnetcore-filter-pipeline-1.png"></p>
 <p>通过使用过滤器可以实现 <strong>短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化</strong> 等，同时使业务代码更加简洁单纯，避免很多重复代码。</p>
 <span id="more"></span>
 
-<h2 id="5种Filter"><a href="#5种Filter" class="headerlink" title="5种Filter"></a>5种Filter</h2><ul>
-<li><p><strong>Authorizaion Filter</strong>：<strong>授权过滤器</strong></p>
+<h2 id="5种Filter"><a href="#5种Filter" class="headerlink" title="5种Filter"></a>5种Filter</h2><h3 id="简单概括"><a href="#简单概括" class="headerlink" title="简单概括"></a>简单概括</h3><ul>
+<li><p><strong>[Authorizaion Filter](#Authorizaion Filter)<strong>：</strong>授权过滤器</strong></p>
 <p>Authorization是五种Filter中最先运行的，用于确定是否已针对请求为用户授权。 如果请求未获授权，可以让管道短路。</p>
 <p><strong>作用</strong>：主要用于实现复杂的<code>权限角色认证</code>、<code>登陆授权</code>等操作。</p>
 </li>
-<li><p><strong>Resource Filter</strong>：<strong>资源过滤器</strong></p>
+<li><p><strong>[Resource Filter](#Resource Filter)<strong>：</strong>资源过滤器</strong></p>
 <p>OnResourceExecuting：在Authorization之后，Model Binding之前执行，对<strong>实现缓存或者对过滤管道进行短路</strong>特别有用。</p>
 <p>OnResourceExecuted：在管道的其余阶段完成之后运行代码。</p>
 <p><strong>作用</strong>：主要用于进行<code>资源缓存</code>、<code>防盗链</code>等操作。</p>
 </li>
-<li><p><strong>Exception Filter</strong>：<strong>异常过滤器</strong></p>
+<li><p><strong>[Exception Filter](#Exception Filter)<strong>：</strong>异常过滤器</strong></p>
 <p>异常处理的Filter，在向响应正文写入任何内容之前，对未经处理的异常应用全局策略。</p>
 <p><strong>作用</strong>：可以进行全局的<code>异常日志收集</code>、<code>错误信息友好化处理</code>等操作。</p>
 </li>
-<li><p><strong>Action Filter</strong>：<strong>操作过滤器</strong></p>
+<li><p><strong>[Action Filter](#Action Filter)<strong>：</strong>操作过滤器</strong></p>
 <p>最常使用的Filter，实际上包围了整个Action。</p>
 <p>OnActionExecuting：执行实际Action操作前触发，更改传递到操作中的参数。</p>
 <p>OnActionExecuted：执行实际Action操作后触发，更改从操作返回的结果。</p>
 <p><strong>作用</strong>：做法太多了，可以用于<code>执行操作日志</code>、<code>参数验证</code>，<code>权限控制</code>等一系列操作。</p>
 </li>
-<li><p><strong>Result Filter</strong>：<strong>结果过滤器</strong></p>
+<li><p><strong>[Result Filter](#Result Filter)<strong>：</strong>结果过滤器</strong></p>
 <p>在执行操作结果之前和之后立即运行代码。<strong>仅当操作方法成功执行时，它们才会运行</strong>。对于必须围绕视图或格式化程序的执行的逻辑，它们很有用。</p>
 <p>OnResultExecuting：在操作结果执行之前调用。</p>
 <p>OnResultExecuted：在操作结果执行之后调用。</p>
 <p><strong>作用</strong>：可以对结果进行<code>格式化</code>、<code>大小写转换</code>、<code>缓存结果</code>等一系列操作。</p>
 </li>
 </ul>
-<p>下图是我自制的一个比较完整的请求在<code>Filter Pipeline</code>中的流动的流程图。</p>
+<h3 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h3><p>下图是我自制的一个比较完整的请求在<code>Filter Pipeline</code>中的流动的流程图。</p>
 <p>需要特别注意的是<code>Exception Filter</code>的位置：</p>
 <ul>
 <li><p>在<strong>它位置之下</strong>的流程中抛出的错误才会被其捕捉处理，然后再流经<code>Resource Filter</code>的<code>OnResourceExecuted</code>方法后出去。</p>
@@ -375,8 +278,159 @@
       </tags>
   </entry>
   <entry>
+    <title>ASP.NET Core缓存</title>
+    <url>/2022/01/+ASP.NETCore%E7%BC%93%E5%AD%98/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改且 <strong>生成成本高</strong> 的数据。 Caching可比从源返回快得多的数据副本。</p>
+<p>ASP.NET Core支持多个不同的缓存</p>
+<ul>
+<li>客户端缓存 Cache-control</li>
+<li>服务器端响应缓存 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/middleware">ResponseCaching</a></li>
+<li>内存缓存  <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/memory">In-MemoryCache</a></li>
+<li>分布式缓存 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed">DistributedCache</a></li>
+</ul>
+<span id="more"></span>
+
+<h2 id="缓存准则"><a href="#缓存准则" class="headerlink" title="缓存准则"></a>缓存准则</h2><ul>
+<li>代码应始终具有用于提取数据的选项，而不是依赖于可用的缓存值。</li>
+<li>缓存的是内存资源，内存资源是有限的因此需要限制缓存增长：<ul>
+<li>请勿将外部输入用作缓存Key，如果任由外部输入作为Key，那缓存很容易就会被恶意刷爆。</li>
+<li>使用过期时间策略限制缓存增长，这能够及时释放不活跃的缓存，及时释放内存空间。</li>
+<li><a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/memory?view=aspnetcore-3.1#use-setsize-size-and-sizelimit-to-limit-cache-size">使用 SetSize、Size 和 SizeLimit 限制缓存大小</a>。 ASP.NET Core运行时 <strong>不会根据</strong> 内存压力限制缓存大小。 由开发人员限制缓存大小。</li>
+</ul>
+</li>
+</ul>
+<h2 id="客户端缓存-Cache-control"><a href="#客户端缓存-Cache-control" class="headerlink" title="客户端缓存 Cache-control"></a>客户端缓存 Cache-control</h2><p>Http协议中规定，服务器端通过返回报文头添加Cache-control，来达到通知客户端进行缓存，如：<code>Cache-control:max-age=30</code>，表示让客户端缓存该内容30秒（当然客户端也可以不干）。</p>
+<p>在ASP.NET Core中，可以通过添加<code>ResponseCacheAttribute</code>这个Attribute，让程序在返回时的添加报文头<code>Cache-control</code>。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ValuesController</span> : <span class="title">Controller</span></span><br><span class="line">&#123;  </span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    [<span class="meta">ResponseCache(Duration = 30)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult&lt;<span class="built_in">bool</span>&gt; <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> accId</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> accountService.Validate(accID);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端缓存只对本客户端有效，在你使用另一个客户端发出一样的请求是，你就会发现访问的不是缓存了的数据，而是最新数据。这时候就需要使用服务端缓存了。</p>
+<h2 id="服务器端响应缓存-ResponseCaching"><a href="#服务器端响应缓存-ResponseCaching" class="headerlink" title="服务器端响应缓存 ResponseCaching"></a>服务器端响应缓存 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/middleware">ResponseCaching</a></h2><p>ASP.NET Core不但可以设置浏览器缓存，还可以设置服务器端的响应缓存，当请求某资源时，响应的内容会被服务器进行缓存，在缓存有效期内，就算不同客户端获取同一资源也不会真的进入该资源地址获取数据，而是由缓存直接返回内容。</p>
+<h3 id="使用ResponseCaching"><a href="#使用ResponseCaching" class="headerlink" title="使用ResponseCaching"></a>使用ResponseCaching</h3><p>要使用服务器缓存，需要以下步骤：</p>
+<ol>
+<li><p>在<code>Startup.ConfigureServices</code>中添加：</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">services.AddResponseCaching();</span><br></pre></td></tr></table></figure></li>
+<li><p>在<code>Startup.Configure</code>中添加：</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">app.UseResponseCaching();</span><br></pre></td></tr></table></figure></li>
+<li><p>同样需要添加<code>ResponseCacheAttribute</code>这个Attribute：</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ValuesController</span> : <span class="title">Controller</span></span><br><span class="line">&#123;  </span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    [<span class="meta">ResponseCache(Duration = 30)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult&lt;<span class="built_in">bool</span>&gt; <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> accId</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> accountService.Validate(accID);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>这时候你通过同一客户端多次访问该资源发现第二次以后的访问的是客户端缓存，通过不同客户端访问的是服务器缓存的内容。</p>
+<h3 id="ResponseCaching的缓存条件"><a href="#ResponseCaching的缓存条件" class="headerlink" title="ResponseCaching的缓存条件"></a>ResponseCaching的缓存条件</h3><ul>
+<li>请求必须生成状态代码为”正常”的 200 (服务器) 响应。</li>
+<li>请求方法必须是 GET 或 HEAD。</li>
+<li>在 <code>Startup.Configure</code> 中，Caching中间件的中间件之前必须放置需要缓存的中间件。 有关详细信息，请参阅 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/middleware/?view=aspnetcore-3.1">ASP.NET Core 中间件</a>。</li>
+<li><code>Authorization</code>标头不能存在。</li>
+<li><code>Cache-Control</code> 标头参数必须有效，并且响应必须标记 <code>public</code> 且未标记为 <code>private</code> 。</li>
+<li>如果标头不存在，则标头不得存在，因为标头 <code>Pragma: no-cache</code> <code>Cache-Control</code> 将替代标头（ <code>Cache-Control</code> <code>Pragma</code> 如果存在）。</li>
+<li><code>Set-Cookie</code>标头不能存在。</li>
+<li><code>Vary</code> 标头参数必须有效且不等于 <code>*</code> 。</li>
+<li>如果 <code>Content-Length</code> 设置了 (标头值) 必须与响应正文的大小匹配。</li>
+<li><a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.aspnetcore.http.features.ihttpsendfilefeature">IHttpSendFileFeature</a>未使用 。</li>
+<li>响应不能像 标头和 和 缓存 <code>Expires</code> 指令所指定 <code>max-age</code> 一 <code>s-maxage</code> 样过时。</li>
+<li>响应缓冲必须成功。 响应的大小必须小于配置的 或默认的 <a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.aspnetcore.responsecaching.responsecachingoptions.sizelimit#Microsoft_AspNetCore_ResponseCaching_ResponseCachingOptions_SizeLimit">SizeLimit</a> 。 响应的正文大小必须小于配置的 或默认的 <a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.aspnetcore.responsecaching.responsecachingoptions.maximumbodysize#Microsoft_AspNetCore_ResponseCaching_ResponseCachingOptions_MaximumBodySize">MaximumBodySize</a> 。</li>
+<li>响应必须可缓存，符合 <a href="https://tools.ietf.org/html/rfc7234">RFC 7234</a> 规范。 例如，指令 <code>no-store</code> 不得存在于请求或响应标头字段中。 有关详细信息 <em>，请参阅第 3</em> 部分：在 <a href="https://tools.ietf.org/html/rfc7234">RFC 7234</a> 的缓存中存储响应。</li>
+</ul>
+<h3 id="ResponseCaching只是看上去美好"><a href="#ResponseCaching只是看上去美好" class="headerlink" title="ResponseCaching只是看上去美好"></a>ResponseCaching只是看上去美好</h3><p>虽然服务器端响应缓存看起来很美好，不过实际上有点中看不中用，应为其生效是有条件的，而且还挺苛刻，实际上只要请求的报文头加上<code>Cache-Control:no-cache</code>，就可以让服务器响应缓存失效。所以一般我们更加依赖于：<code>内存缓存</code>、<code>分布式缓存</code>。</p>
+<h2 id="内存缓存-IMemoryCache"><a href="#内存缓存-IMemoryCache" class="headerlink" title="内存缓存  IMemoryCache"></a>内存缓存  <a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.extensions.caching.memory.imemorycache">IMemoryCache</a></h2><p>内存缓存是数据保存在当前运行的网站的内存中，是与进程相关的。而由于在Web服务器中，多个不同网站时运行在不同进程中的，因此不同网站的内存时不会互相干扰的，也就意味着不能直接访问不在同一进程中的其他应用程序的内存缓存，然后需要注意的是网站重启后，内存缓存中的数据会清空。</p>
+<h3 id="使用内存缓存"><a href="#使用内存缓存" class="headerlink" title="使用内存缓存"></a>使用内存缓存</h3><p>要使用内存缓存，需要：</p>
+<ol>
+<li><p>在<code>Startup.ConfigureServices</code>中添加：</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">services.AddMemoryCache();</span><br></pre></td></tr></table></figure></li>
+<li><p>注入<code>IMemoryCache</code></p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> IMemoryCache _cache;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">MemoryCacheController</span>(<span class="params">IMemoryCache memoryCache</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    _cache = memoryCache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>使用<code>TryGetValue</code>、<code>Remove</code>、<code>Set</code>、<code>GetOrCreate</code>等方法操作MemoryCache</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MemoryCacheController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> IMemoryCache _cache;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MemoryCacheController</span>(<span class="params">IMemoryCache memoryCache</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache = memoryCache;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> id</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> strName = <span class="string">&quot;未知&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//方法一、使用TryGetValue与Set</span></span><br><span class="line">        <span class="comment">//if (!_cache.TryGetValue(&quot;Name&quot;, out strName))</span></span><br><span class="line">        <span class="comment">//&#123;</span></span><br><span class="line">        <span class="comment">//    strName = GetNmae(id);</span></span><br><span class="line">        <span class="comment">//    _cache.Set(&quot;Name&quot;, strName);</span></span><br><span class="line">        <span class="comment">//&#125;</span></span><br><span class="line">        <span class="comment">//方法二、使用GetOrCreate</span></span><br><span class="line">        <span class="comment">//strName = _cache.GetOrCreate&lt;string&gt;(&quot;Name&quot;, (e) =&gt; &#123; return GetNmae(id); &#125;);</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> strName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Remove&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Remove</span>(<span class="params"><span class="built_in">string</span> cacheName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache.Remove(cacheName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetNmae</span>(<span class="params"><span class="built_in">int</span> id</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">switch</span> (id)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>: <span class="keyword">return</span> <span class="string">&quot;Singo&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>: <span class="keyword">return</span> <span class="string">&quot;古月&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            <span class="literal">default</span>: <span class="keyword">return</span> <span class="string">&quot;无名&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>访问<code>Get</code>方法获得数据并设置一个名字为”Name”的MemoryCache，在过期前再次访问获得的都是MemoryCache里的数据，可以通过访问<code>Remove</code>方法，传入参数”Name”，即可清除名字为”Name”的MemoryCache。</p>
+<h3 id="过期时间策略"><a href="#过期时间策略" class="headerlink" title="过期时间策略"></a>过期时间策略</h3><p>默认情况下内存缓存是不会过期的，因此我们可以通过<code>Remove</code>方法删除缓存，或者使用<code>Set</code>方法重新设置缓存，不过在实际应用中大部分时间不会这么做，因为这么弄很麻烦，更常用的办法时使用过期时间来管理。</p>
+<p>过期时间策略有两种</p>
+<ul>
+<li><p>绝对过期时间，通过设置<code>ICacheEntry.AbsoluteExpirationRelativeToNow</code>(过多少时间后失效)或<code>ICacheEntry.AbsoluteExpiration</code>(什么时间点失效)。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//不会过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123; <span class="keyword">return</span> GetNmae(id); &#125;);</span><br><span class="line"><span class="comment">//5秒后过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//在今天晚上23点失效</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpiration = System.DateTime.Today.AddHours(<span class="number">23</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>滑动过期时间，通过设置<code>ICacheEntry.SlidingExpiration</code>(过多少时间后失效，但是如果在失效前一直有访问尽量，那就会延长设置的时间（注意是在被访问的时间点上），直到过期。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//5秒后过期，假如在过期前被访问，以被访问时间点位基准再次延迟5秒，直到过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>不过可以混用两种策略，让缓存数据能够在滑动过期时间的基础上，通过设置绝对过期时间来达到强制刷新数据的目的，也就是说在绝对过期时间这个点数据必定过期，滑动时间影响不了。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//混用绝对过期时间与滑动过期时间</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">15</span>);  <span class="comment">//绝对过期时间15秒</span></span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);  <span class="comment">//滑动过期时间5秒</span></span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="分布式缓存-DistributedCache"><a href="#分布式缓存-DistributedCache" class="headerlink" title="分布式缓存 DistributedCache"></a>分布式缓存 <a href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed">DistributedCache</a></h2><p>内存缓存在比较简单的应用里是足够使用的，但是对于现在需要多台服务器进行负载均衡的架构环境中就显得有点不太够用，如会出现：缓存内容不一致、多台服务器缓存同一内容浪费内存空间等问题，因此需要一个独立的统一的缓存存储中心，以便让所有的Web服务器共享同一份缓存数据，我们将这种缓存形式称为<strong>分布式缓存</strong>。</p>
+<h3 id="有关-NET-Core的分布式缓存"><a href="#有关-NET-Core的分布式缓存" class="headerlink" title="有关.NET Core的分布式缓存"></a>有关.NET Core的分布式缓存</h3><ul>
+<li><p>.NET Core没有内置分布式缓存，但是却提供了统一的分布式缓存服务器的操作接口IDistributedCache，用法实际与内存缓存类似。</p>
+</li>
+<li><p>可以使用常用分布式缓存如<a href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.StackExchangeRedis">Redis</a>、<a href="https://www.nuget.org/packages/NCache.Microsoft.Extensions.Caching.OpenSource">NCache</a>、<a href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.SqlServer">SQL Server</a>、<a href="https://www.nuget.org/packages/EnyimMemcachedCore/">Memcached</a>等。</p>
+<p><a href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.SqlServer">SQL Server</a>：缓存性能并不好，基本不考虑。</p>
+<p><a href="https://www.nuget.org/packages/EnyimMemcachedCore/">Memcached</a>：缓存专用，性能非常高能，可惜对集群、高可用方面支持比较弱，而且有<em>缓存键最大长度为250字节</em>（以前做项目刚用时就被坑过，超过了就直接截断，也没报错提醒）、*<em>最大只能存储1MB的单个item</em>等限制。</p>
+<p><a href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.StackExchangeRedis">Redis</a>：虽然做缓存服务器的性能比Memcached稍差，但是其高可用、集群等方面非常强大，适合在数据量大及集群等场景使用，并且缓存外的功能也很强大，还能做消息队列等。</p>
+<p><a href="https://www.nuget.org/packages/NCache.Microsoft.Extensions.Caching.OpenSource">NCache</a>：它是一个高性能的、分布式的、可扩展的、天生为.Net设计的缓存框架，NCache不仅比 Redis 快，而且还提供了一些Redis所不具有的分布式特性。</p>
+</li>
+<li><p>分布式缓存其缓存值的类型为<code>byte[]</code>，虽然也提供了接受string的类型的方法，但是最终都会转换为<code>byte[]</code>，而且本身IDistributedCache提供的方法有限，最好扩展IDistributedCache的方法。</p>
+</li>
+</ul>
+<h3 id="IDistributedCache接口包含以下方法"><a href="#IDistributedCache接口包含以下方法" class="headerlink" title="IDistributedCache接口包含以下方法"></a>IDistributedCache接口包含以下方法</h3><ul>
+<li><p>Get、GetAsync</p>
+<p>  采用字符串键并以byte[]形式检索缓存项（如果在缓存中找到）。</p>
+</li>
+<li><p>Set、SetAsync</p>
+<p>  使用字符串键向缓存添加项byte[]形式）。</p>
+</li>
+<li><p>Refresh、RefreshAsync</p>
+<p>  根据键刷新缓存中的项，并重置其可调过期超时值（如果有）。</p>
+</li>
+<li><p>Remove、RemoveAsync</p>
+<p>  根据键删除缓存项。</p>
+</li>
+</ul>
+<h3 id="Redis-分布式缓存"><a href="#Redis-分布式缓存" class="headerlink" title="Redis 分布式缓存"></a>Redis 分布式缓存</h3><ol>
+<li><p>安装Redis相关包，这个包是微软提供的</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">install-package</span> Microsoft.Extensions.Caching.StackExchangeRedis</span><br><span class="line">//注意以前使用的是：Microsoft.Extensions.Caching.Redis包，不过这个包<span class="number">2018</span>年后就没更新了</span><br></pre></td></tr></table></figure></li>
+<li><p>在<code>Startup.ConfigureServices</code>中注册</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Use Redis</span></span><br><span class="line">services.AddStackExchangeRedisCache(options =&gt; &#123;</span><br><span class="line">    options.Configuration = <span class="string">&quot;localhost&quot;</span>;  <span class="comment">//使用本地</span></span><br><span class="line">    options.InstanceName = <span class="string">&quot;SampleInstance_&quot;</span>;  <span class="comment">//添加前缀可以区别于其他应用来的数据</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>注入</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> IDistributedCache _cache;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">RedisController</span>(<span class="params">IDistributedCache cache</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    _cache = cache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>使用</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">RedisController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> IDistributedCache _cache;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RedisController</span>(<span class="params">IDistributedCache cache</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache = cache;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Get&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Get</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//获取</span></span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Set&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Set</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (obj == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">int</span> absoluteExpirationRelativeToNowSec = <span class="number">100</span>;</span><br><span class="line">            <span class="built_in">int</span> slidingExpirationSec = <span class="number">50</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//添加，注意：添加Redis后的类型是hash</span></span><br><span class="line">            <span class="comment">//默认没有过期时间</span></span><br><span class="line">            <span class="comment">//_cache.Set(&quot;id1&quot;, Encoding.Default.GetBytes(&quot;永不过期，缓存时间是：&#123;DateTime.Now.ToLongTimeString()&#125;&quot;), new DistributedCacheEntryOptions &#123; &#125;);</span></span><br><span class="line">            <span class="comment">//同样可以设置绝对过期时间与滑动过期时间</span></span><br><span class="line">            _cache.Set(</span><br><span class="line">                <span class="string">&quot;id1&quot;</span>,</span><br><span class="line">                Encoding.Default.GetBytes(<span class="string">$&quot;缓存时间是：<span class="subst">&#123;DateTime.Now.ToLongTimeString()&#125;</span>，过期时间是：<span class="subst">&#123;DateTime.Now.AddSeconds(absoluteExpirationRelativeToNowSec).ToLongTimeString()&#125;</span>&quot;</span>),</span><br><span class="line">                <span class="keyword">new</span> DistributedCacheEntryOptions</span><br><span class="line">                &#123;</span><br><span class="line">                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(absoluteExpirationRelativeToNowSec),</span><br><span class="line">                    SlidingExpiration = TimeSpan.FromSeconds(slidingExpirationSec)</span><br><span class="line">                &#125;</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Del&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Del</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//移除</span></span><br><span class="line">        _cache.Remove(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Refresh&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Refresh</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//刷新，Get命令同样会刷新滑动过期时间</span></span><br><span class="line">        _cache.Refresh(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> obj = _cache.Get(<span class="string">&quot;id1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> (obj == <span class="literal">null</span> ? <span class="string">&quot;Err：Not Found!&quot;</span> : Encoding.Default.GetString(obj));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h2><h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>访问一个缓存和数据库都不存在的key，由于该key注定获得不了数据，因此不会被写缓存，永远都会直接访问到数据库上。这种缓存永远起不了作用，直接被”穿透“到数据库的情况，被称为缓存穿透。</p>
+<p> <strong>解决方案</strong>：</p>
+<ul>
+<li>接口层增加校验，如用户鉴权校验，id做基础校验，id&lt;=0的直接拦截；</li>
+<li>当出现这种请求时，也将其缓存，其key为请求的key，value为null，但是缓存有效时间设置短点，如30秒（设置太长会导致正常情况也没法使用）。这样可以防止攻击用户反复用同一个id暴力攻击。</li>
+</ul>
+<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>某一个热点key，在缓存过期的一瞬间，同时有大量的请求打进来，由于此时缓存过期了，所以请求最终都会走到数据库，造成瞬时数据库请求量大、压力骤增，甚至可能打垮数据库。</p>
+<p><strong>解决方案</strong>：</p>
+<ul>
+<li><strong>加互斥锁</strong>。在并发的多个请求中，只有第一个请求线程能拿到锁并执行数据库查询操作，其他的线程拿不到锁就阻塞等着，等到第一个线程将数据写入缓存后，直接走缓存。</li>
+<li><strong>热点数据不过期</strong>。直接将缓存设置为不过期，然后由定时任务去异步加载数据，更新缓存。</li>
+</ul>
+<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>  缓存雪崩是由于原有缓存失效(过期)，新缓存未到期间。所有请求都去查询数据库，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</p>
+<p><strong>解决方案</strong>：</p>
+<ul>
+<li><p><strong>加互斥锁</strong>。同<a href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF">缓存击穿</a>的。</p>
+</li>
+<li><p><strong>热点数据不过期</strong>。同<a href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF">缓存击穿</a>的。</p>
+</li>
+<li><p><strong>错开过期时间</strong>。在基础过期时间的基础上，加上一个随机时间，防止同一时间大量数据过期现象发生。如：本来统一设置位3分钟的，变为3分钟加1-15秒的随机数。</p>
+</li>
+</ul>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>本文章是基本上是基于ASP.NET Core3.1版本编写，其后续版本可能发生变化，具体使用请去<a href="https://docs.microsoft.com/en-us/aspnet/core/performance/caching/overview">微软官方文档</a>查看。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://docs.microsoft.com/en-us/aspnet/core/performance/caching/overview">微软官方文档</a></p>
+<p><a href="https://www.bilibili.com/video/BV1pK41137He">.NET 6教程，.Net Core 2022视频教程，杨中科主讲</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/359118610">缓存穿透、缓存击穿、缓存雪崩解决方案</a></p>
+]]></content>
+      <categories>
+        <category>Dev</category>
+        <category>.Net Core</category>
+        <category>ASP.NET Core</category>
+      </categories>
+      <tags>
+        <tag>ASP.NET Core</tag>
+        <tag>.Net Core</tag>
+        <tag>Caching</tag>
+        <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>快速打开关闭sqlserver相关服务</title>
-    <url>/2021/12/%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80%E5%85%B3%E9%97%ADsqlserver%E7%9B%B8%E5%85%B3%E6%9C%8D%E5%8A%A1/</url>
+    <url>/2022/01/+%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80%E5%85%B3%E9%97%ADsqlserver%E7%9B%B8%E5%85%B3%E6%9C%8D%E5%8A%A1/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SQL Server安装后默认是一直随系统启动的，对于服务器当然没问题，但是对于个人开发而言，确实是不希望在不需要时一直运行相关SQL Server的服务。毕竟个人电脑性能有限，还是希望软件能够要用的才打开，不需要时能够释放占用的性能。</p>
 <p>于是就有了这篇文章，提供一个脚本，需要时开启SQL Server相关服务，不需要是关闭SQL Server相关服务。</p>
 <span id="more"></span>

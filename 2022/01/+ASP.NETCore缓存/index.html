@@ -19,7 +19,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":260,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="基础知识Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改且 生成成本高 的数据。 Caching可比从源返回快得多的数据副本。 ASP.NET Core支持多个不同的缓存  客户端缓存 Cache-control 服务器端响应缓存 ResponseCaching 内存缓存  In-MemoryCache 分布式缓存 DistributedC">
@@ -126,7 +126,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -136,7 +136,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -234,7 +234,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.7k</span>
+              <span>8.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
 
 <p>客户端缓存只对本客户端有效，在你使用另一个客户端发出一样的请求是，你就会发现访问的不是缓存了的数据，而是最新数据。这时候就需要使用服务端缓存了。</p>
 <h2 id="服务器端响应缓存-ResponseCaching"><a href="#服务器端响应缓存-ResponseCaching" class="headerlink" title="服务器端响应缓存 ResponseCaching"></a>服务器端响应缓存 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/middleware">ResponseCaching</a></h2><p>ASP.NET Core不但可以设置浏览器缓存，还可以设置服务器端的响应缓存，当请求某资源时，响应的内容会被服务器进行缓存，在缓存有效期内，就算不同客户端获取同一资源也不会真的进入该资源地址获取数据，而是由缓存直接返回内容。</p>
-<p>要使用服务器缓存，需要以下步骤：</p>
+<h3 id="使用ResponseCaching"><a href="#使用ResponseCaching" class="headerlink" title="使用ResponseCaching"></a>使用ResponseCaching</h3><p>要使用服务器缓存，需要以下步骤：</p>
 <ol>
 <li><p>在<code>Startup.ConfigureServices</code>中添加：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">services.AddResponseCaching();</span><br></pre></td></tr></table></figure></li>
@@ -288,8 +288,7 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ValuesController</span> : <span class="title">Controller</span></span><br><span class="line">&#123;  </span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    [<span class="meta">ResponseCache(Duration = 30)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult&lt;<span class="built_in">bool</span>&gt; <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> accId</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> accountService.Validate(accID);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ol>
 <p>这时候你通过同一客户端多次访问该资源发现第二次以后的访问的是客户端缓存，通过不同客户端访问的是服务器缓存的内容。</p>
-<p>虽然服务器端响应缓存看起来很美好，不过实际上有点中看不中用，应为其生效是有条件的，而且还挺苛刻，实际上只要请求的报文头加上<code>Cache-Control:no-cache</code>，就可以让服务器响应缓存失效。所以一般我们更加依赖于：<code>内存缓存</code>、<code>分布式缓存</code>。</p>
-<h3 id="缓存条件"><a href="#缓存条件" class="headerlink" title="缓存条件"></a>缓存条件</h3><ul>
+<h3 id="ResponseCaching的缓存条件"><a href="#ResponseCaching的缓存条件" class="headerlink" title="ResponseCaching的缓存条件"></a>ResponseCaching的缓存条件</h3><ul>
 <li>请求必须生成状态代码为”正常”的 200 (服务器) 响应。</li>
 <li>请求方法必须是 GET 或 HEAD。</li>
 <li>在 <code>Startup.Configure</code> 中，Caching中间件的中间件之前必须放置需要缓存的中间件。 有关详细信息，请参阅 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/middleware/?view=aspnetcore-3.1">ASP.NET Core 中间件</a>。</li>
@@ -304,9 +303,9 @@
 <li>响应缓冲必须成功。 响应的大小必须小于配置的 或默认的 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.aspnetcore.responsecaching.responsecachingoptions.sizelimit#Microsoft_AspNetCore_ResponseCaching_ResponseCachingOptions_SizeLimit">SizeLimit</a> 。 响应的正文大小必须小于配置的 或默认的 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.aspnetcore.responsecaching.responsecachingoptions.maximumbodysize#Microsoft_AspNetCore_ResponseCaching_ResponseCachingOptions_MaximumBodySize">MaximumBodySize</a> 。</li>
 <li>响应必须可缓存，符合 <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc7234">RFC 7234</a> 规范。 例如，指令 <code>no-store</code> 不得存在于请求或响应标头字段中。 有关详细信息 <em>，请参阅第 3</em> 部分：在 <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc7234">RFC 7234</a> 的缓存中存储响应。</li>
 </ul>
-<h2 id="内存缓存-IMemoryCache"><a href="#内存缓存-IMemoryCache" class="headerlink" title="内存缓存  IMemoryCache"></a>内存缓存  <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.extensions.caching.memory.imemorycache">IMemoryCache</a></h2><p>内存缓存是数据保存在当前运行的网站的内存中，是与进程相关的。而由于在Web服务器中，多个不同网站时运行在不同进程中的，因此不同网站的内存时不会互相干扰的，也就意味着不能直接访问不在同一进程中的其他应用程序的内存缓存，然后需要注意的是网站重启后，内存缓存中的数据会被情况。</p>
-<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.caching">System.Runtime.Caching</a>/<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/dotnet/api/system.runtime.caching.memorycache">MemoryCache</a></p>
-<p>要使用内存缓存，需要：</p>
+<h3 id="ResponseCaching只是看上去美好"><a href="#ResponseCaching只是看上去美好" class="headerlink" title="ResponseCaching只是看上去美好"></a>ResponseCaching只是看上去美好</h3><p>虽然服务器端响应缓存看起来很美好，不过实际上有点中看不中用，应为其生效是有条件的，而且还挺苛刻，实际上只要请求的报文头加上<code>Cache-Control:no-cache</code>，就可以让服务器响应缓存失效。所以一般我们更加依赖于：<code>内存缓存</code>、<code>分布式缓存</code>。</p>
+<h2 id="内存缓存-IMemoryCache"><a href="#内存缓存-IMemoryCache" class="headerlink" title="内存缓存  IMemoryCache"></a>内存缓存  <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.extensions.caching.memory.imemorycache">IMemoryCache</a></h2><p>内存缓存是数据保存在当前运行的网站的内存中，是与进程相关的。而由于在Web服务器中，多个不同网站时运行在不同进程中的，因此不同网站的内存时不会互相干扰的，也就意味着不能直接访问不在同一进程中的其他应用程序的内存缓存，然后需要注意的是网站重启后，内存缓存中的数据会清空。</p>
+<h3 id="使用内存缓存"><a href="#使用内存缓存" class="headerlink" title="使用内存缓存"></a>使用内存缓存</h3><p>要使用内存缓存，需要：</p>
 <ol>
 <li><p>在<code>Startup.ConfigureServices</code>中添加：</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">services.AddMemoryCache();</span><br></pre></td></tr></table></figure></li>
@@ -327,8 +326,7 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//混用绝对过期时间与滑动过期时间</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">15</span>);  <span class="comment">//绝对过期时间15秒</span></span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);  <span class="comment">//滑动过期时间5秒</span></span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
 </ul>
 <h2 id="分布式缓存-DistributedCache"><a href="#分布式缓存-DistributedCache" class="headerlink" title="分布式缓存 DistributedCache"></a>分布式缓存 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed">DistributedCache</a></h2><p>内存缓存在比较简单的应用里是足够使用的，但是对于现在需要多台服务器进行负载均衡的架构环境中就显得有点不太够用，如会出现：缓存内容不一致、多台服务器缓存同一内容浪费内存空间等问题，因此需要一个独立的统一的缓存存储中心，以便让所有的Web服务器共享同一份缓存数据，我们将这种缓存形式称为<strong>分布式缓存</strong>。</p>
-<p>有关.NET Core的分布式缓存如下：</p>
-<ul>
+<h3 id="有关-NET-Core的分布式缓存"><a href="#有关-NET-Core的分布式缓存" class="headerlink" title="有关.NET Core的分布式缓存"></a>有关.NET Core的分布式缓存</h3><ul>
 <li><p>.NET Core没有内置分布式缓存，但是却提供了统一的分布式缓存服务器的操作接口IDistributedCache，用法实际与内存缓存类似。</p>
 </li>
 <li><p>可以使用常用分布式缓存如<a target="_blank" rel="noopener" href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.StackExchangeRedis">Redis</a>、<a target="_blank" rel="noopener" href="https://www.nuget.org/packages/NCache.Microsoft.Extensions.Caching.OpenSource">NCache</a>、<a target="_blank" rel="noopener" href="https://www.nuget.org/packages/Microsoft.Extensions.Caching.SqlServer">SQL Server</a>、<a target="_blank" rel="noopener" href="https://www.nuget.org/packages/EnyimMemcachedCore/">Memcached</a>等。</p>
@@ -415,7 +413,7 @@
       <i class="fa fa-chevron-left"></i> ASP.NETCore使用Swagger
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/01/ASP.NETCore%E7%9A%84Filter/" rel="next" title="ASP.NETCore的Filter">
+    <a href="/2022/01/+ASP.NETCore%E7%9A%84Filter/" rel="next" title="ASP.NETCore的Filter">
       ASP.NETCore的Filter <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -476,7 +474,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%86%E5%88%99"><span class="nav-text">缓存准则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%BC%93%E5%AD%98-Cache-control"><span class="nav-text">客户端缓存 Cache-control</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%93%8D%E5%BA%94%E7%BC%93%E5%AD%98-ResponseCaching"><span class="nav-text">服务器端响应缓存 ResponseCaching</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%9D%A1%E4%BB%B6"><span class="nav-text">缓存条件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%BC%93%E5%AD%98-IMemoryCache"><span class="nav-text">内存缓存  IMemoryCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E7%AD%96%E7%95%A5"><span class="nav-text">过期时间策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98-DistributedCache"><span class="nav-text">分布式缓存 DistributedCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDistributedCache%E6%8E%A5%E5%8F%A3%E5%8C%85%E5%90%AB%E4%BB%A5%E4%B8%8B%E6%96%B9%E6%B3%95"><span class="nav-text">IDistributedCache接口包含以下方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98"><span class="nav-text">Redis 分布式缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%97%AE%E9%A2%98"><span class="nav-text">缓存问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-text">缓存雪崩</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-text">注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%86%E5%88%99"><span class="nav-text">缓存准则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%BC%93%E5%AD%98-Cache-control"><span class="nav-text">客户端缓存 Cache-control</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%93%8D%E5%BA%94%E7%BC%93%E5%AD%98-ResponseCaching"><span class="nav-text">服务器端响应缓存 ResponseCaching</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ResponseCaching"><span class="nav-text">使用ResponseCaching</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseCaching%E7%9A%84%E7%BC%93%E5%AD%98%E6%9D%A1%E4%BB%B6"><span class="nav-text">ResponseCaching的缓存条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseCaching%E5%8F%AA%E6%98%AF%E7%9C%8B%E4%B8%8A%E5%8E%BB%E7%BE%8E%E5%A5%BD"><span class="nav-text">ResponseCaching只是看上去美好</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%BC%93%E5%AD%98-IMemoryCache"><span class="nav-text">内存缓存  IMemoryCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%86%85%E5%AD%98%E7%BC%93%E5%AD%98"><span class="nav-text">使用内存缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E7%AD%96%E7%95%A5"><span class="nav-text">过期时间策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98-DistributedCache"><span class="nav-text">分布式缓存 DistributedCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E5%85%B3-NET-Core%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98"><span class="nav-text">有关.NET Core的分布式缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IDistributedCache%E6%8E%A5%E5%8F%A3%E5%8C%85%E5%90%AB%E4%BB%A5%E4%B8%8B%E6%96%B9%E6%B3%95"><span class="nav-text">IDistributedCache接口包含以下方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98"><span class="nav-text">Redis 分布式缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%97%AE%E9%A2%98"><span class="nav-text">缓存问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-text">缓存雪崩</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-text">注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -490,7 +488,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -503,7 +501,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -547,14 +545,14 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">28k</span>
+    <span title="站点总字数">33k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">26 分钟</span>
+    <span title="站点阅读时长">30 分钟</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
 
         
@@ -600,7 +598,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
