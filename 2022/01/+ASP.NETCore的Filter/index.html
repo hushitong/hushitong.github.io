@@ -22,12 +22,12 @@
     var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="什么是Filter过滤器（Filter）是 AOP[^AOP]思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。 下面图片显示了管道所在位置  通过使用过滤器可以实现 短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化 等，同时使业务代码更加简洁单纯，避免很多重复代码。">
+  <meta name="description" content="什么是Filter过滤器（Filter）是 AOP[^AOP] 思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。 下面图片显示了管道所在位置  通过使用过滤器可以实现 短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化 等，同时使业务代码更加简洁单纯，避免很多重复代码。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ASP.NETCore的Filter">
 <meta property="og:url" content="http://hushitong.github.io/2022/01/+ASP.NETCore%E7%9A%84Filter/index.html">
 <meta property="og:site_name" content="Singo&#39;Sky">
-<meta property="og:description" content="什么是Filter过滤器（Filter）是 AOP[^AOP]思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。 下面图片显示了管道所在位置  通过使用过滤器可以实现 短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化 等，同时使业务代码更加简洁单纯，避免很多重复代码。">
+<meta property="og:description" content="什么是Filter过滤器（Filter）是 AOP[^AOP] 思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。 下面图片显示了管道所在位置  通过使用过滤器可以实现 短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化 等，同时使业务代码更加简洁单纯，避免很多重复代码。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-1.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-2.jpg">
@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">21</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -256,33 +256,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是Filter"><a href="#什么是Filter" class="headerlink" title="什么是Filter"></a>什么是Filter</h2><p>过滤器（Filter）是 AOP[^AOP]思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。</p>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是Filter"><a href="#什么是Filter" class="headerlink" title="什么是Filter"></a>什么是Filter</h2><p>过滤器（Filter）是 AOP[^AOP] 思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。</p>
 <p>下面图片显示了管道所在位置</p>
 <p><img src="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-1.png" alt="aspnetcore-filter-pipeline-1.png"></p>
 <p>通过使用过滤器可以实现 <strong>短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化</strong> 等，同时使业务代码更加简洁单纯，避免很多重复代码。</p>
 <span id="more"></span>
 
 <h2 id="5种Filter"><a href="#5种Filter" class="headerlink" title="5种Filter"></a>5种Filter</h2><h3 id="简单概括"><a href="#简单概括" class="headerlink" title="简单概括"></a>简单概括</h3><ul>
-<li><p><strong>[Authorizaion Filter](#Authorizaion Filter)<strong>：</strong>授权过滤器</strong></p>
+<li><p><strong>[Authorizaion Filter](#Authorizaion Filter)</strong> ：<strong>授权过滤器</strong></p>
 <p>Authorization是五种Filter中最先运行的，用于确定是否已针对请求为用户授权。 如果请求未获授权，可以让管道短路。</p>
 <p><strong>作用</strong>：主要用于实现复杂的<code>权限角色认证</code>、<code>登陆授权</code>等操作。</p>
 </li>
-<li><p><strong>[Resource Filter](#Resource Filter)<strong>：</strong>资源过滤器</strong></p>
+<li><p><strong>[Resource Filter](#Resource Filter)</strong> ：<strong>资源过滤器</strong></p>
 <p>OnResourceExecuting：在Authorization之后，Model Binding之前执行，对<strong>实现缓存或者对过滤管道进行短路</strong>特别有用。</p>
 <p>OnResourceExecuted：在管道的其余阶段完成之后运行代码。</p>
 <p><strong>作用</strong>：主要用于进行<code>资源缓存</code>、<code>防盗链</code>等操作。</p>
 </li>
-<li><p><strong>[Exception Filter](#Exception Filter)<strong>：</strong>异常过滤器</strong></p>
+<li><p><strong>[Exception Filter](#Exception Filter)</strong> ：<strong>异常过滤器</strong></p>
 <p>异常处理的Filter，在向响应正文写入任何内容之前，对未经处理的异常应用全局策略。</p>
 <p><strong>作用</strong>：可以进行全局的<code>异常日志收集</code>、<code>错误信息友好化处理</code>等操作。</p>
 </li>
-<li><p><strong>[Action Filter](#Action Filter)<strong>：</strong>操作过滤器</strong></p>
+<li><p><strong>[Action Filter](#Action Filter)</strong> ：<strong>操作过滤器</strong></p>
 <p>最常使用的Filter，实际上包围了整个Action。</p>
 <p>OnActionExecuting：执行实际Action操作前触发，更改传递到操作中的参数。</p>
 <p>OnActionExecuted：执行实际Action操作后触发，更改从操作返回的结果。</p>
 <p><strong>作用</strong>：做法太多了，可以用于<code>执行操作日志</code>、<code>参数验证</code>，<code>权限控制</code>等一系列操作。</p>
 </li>
-<li><p><strong>[Result Filter](#Result Filter)<strong>：</strong>结果过滤器</strong></p>
+<li><p><strong>[Result Filter](#Result Filter)</strong> ：<strong>结果过滤器</strong></p>
 <p>在执行操作结果之前和之后立即运行代码。<strong>仅当操作方法成功执行时，它们才会运行</strong>。对于必须围绕视图或格式化程序的执行的逻辑，它们很有用。</p>
 <p>OnResultExecuting：在操作结果执行之前调用。</p>
 <p>OnResultExecuted：在操作结果执行之后调用。</p>
@@ -420,8 +420,8 @@
       <i class="fa fa-chevron-left"></i> ASP.NET Core缓存
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/02/+ASP.NETCore%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie/" rel="next" title="ASP.NETCore如何解密Cookie">
-      ASP.NETCore如何解密Cookie <i class="fa fa-chevron-right"></i>
+    <a href="/2022/02/+ASP.NETCore%E4%BD%BF%E7%94%A8JWT/" rel="next" title="ASP.NET Core使用JWT">
+      ASP.NET Core使用JWT <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -495,7 +495,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -508,7 +508,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -552,12 +552,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">33k</span>
+    <span title="站点总字数">47k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">30 分钟</span>
+    <span title="站点阅读时长">42 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

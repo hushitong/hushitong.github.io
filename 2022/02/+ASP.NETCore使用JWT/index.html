@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="有关JWT的基础看这文章之前需要先对JWT有了解，不过这部分已经有很多很好的文章，这边我就不再叙述，你可以看如 ASP.NET Core 认证与授权4:JwtBearer认证 前面的介绍。 ASP.NET Core使用JWT这里我按照正常项目那样，分成两个项目，JWT.Server项目负责生成JWT，JWT.DemoApi则负责提供Api接口服务对于受限接口会验证JWT。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ASP.NET Core使用JWT">
+<meta property="og:url" content="http://hushitong.github.io/2022/02/+ASP.NETCore%E4%BD%BF%E7%94%A8JWT/index.html">
+<meta property="og:site_name" content="Singo&#39;Sky">
+<meta property="og:description" content="有关JWT的基础看这文章之前需要先对JWT有了解，不过这部分已经有很多很好的文章，这边我就不再叙述，你可以看如 ASP.NET Core 认证与授权4:JwtBearer认证 前面的介绍。 ASP.NET Core使用JWT这里我按照正常项目那样，分成两个项目，JWT.Server项目负责生成JWT，JWT.DemoApi则负责提供Api接口服务对于受限接口会验证JWT。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-13T16:00:00.000Z">
+<meta property="article:author" content="Singo">
+<meta property="article:tag" content=".NET Core">
+<meta property="article:tag" content="ASP.Net Core">
+<meta property="article:tag" content="EF Core">
+<meta property="article:tag" content="JWT">
+<meta property="article:tag" content="Auth">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hushitong.github.io/2022/02/+ASP.NETCore%E4%BD%BF%E7%94%A8JWT/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ASP.NET Core使用JWT | Singo'Sky</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Singo'Sky</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hushitong.github.io/2022/02/+ASP.NETCore%E4%BD%BF%E7%94%A8JWT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Singo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Singo'Sky">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ASP.NET Core使用JWT
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-14 00:00:00" itemprop="dateCreated datePublished" datetime="2022-02-14T00:00:00+08:00">2022-02-14</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="有关JWT的基础"><a href="#有关JWT的基础" class="headerlink" title="有关JWT的基础"></a>有关JWT的基础</h2><p>看这文章之前需要先对JWT有了解，不过这部分已经有很多很好的文章，这边我就不再叙述，你可以看如 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/RainingNight/p/jwtbearer-authentication-in-asp-net-core.html">ASP.NET Core 认证与授权4:JwtBearer认证</a> 前面的介绍。</p>
+<h2 id="ASP-NET-Core使用JWT"><a href="#ASP-NET-Core使用JWT" class="headerlink" title="ASP.NET Core使用JWT"></a>ASP.NET Core使用JWT</h2><p>这里我按照正常项目那样，分成两个项目，JWT.Server项目负责生成JWT，JWT.DemoApi则负责提供Api接口服务对于受限接口会验证JWT。</p>
+<span id="more"></span>
+
+<h3 id="JWT-Server生成JWT"><a href="#JWT-Server生成JWT" class="headerlink" title="JWT.Server生成JWT"></a>JWT.Server生成JWT</h3><ol>
+<li><p>新建ASP.NET Core WebApi项目，我这里使用了3.1版本</p>
+</li>
+<li><p>nuget安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 需要根据自己的.net core版本选择相应版本</span><br><span class="line">Install-Package Microsoft.AspNetCore.Authentication.JwtBearer</span><br></pre></td></tr></table></figure></li>
+<li><p>在<code>appsettings.json</code>中添加上JWT相关配置</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;Jwt&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="comment">//密钥，需要大于等于16个字符，生产中密钥当然不能如下面这么简单</span></span><br><span class="line">  <span class="attr">&quot;Secret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;123456789@qwerasdf&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">//签发者</span></span><br><span class="line">  <span class="attr">&quot;Iss&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://hushitong.github.io&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">//使用者</span></span><br><span class="line">  <span class="attr">&quot;Aud&quot;</span><span class="punctuation">:</span> <span class="string">&quot;api&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">//设置过期时间</span></span><br><span class="line">  <span class="attr">&quot;ExpireSeconds&quot;</span><span class="punctuation">:</span> <span class="number">300</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>新建<code>JWTController</code>，添加生成JWT相关代码</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">JWT.Server.Controllers</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">    [<span class="meta">ApiController</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">JWTController</span> : <span class="title">ControllerBase</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">readonly</span> IConfiguration configuration;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">JWTController</span>(<span class="params">IConfiguration configuration</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">this</span>.configuration = configuration;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        [<span class="meta">HttpGet</span>]</span><br><span class="line">        <span class="function"><span class="keyword">public</span> IActionResult <span class="title">Authenticate</span>(<span class="params"><span class="built_in">string</span> userName, <span class="built_in">string</span> pwd</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//实际项目这里应该做登陆验证，这里就写死了</span></span><br><span class="line">            <span class="keyword">if</span> (userName == <span class="string">&quot;admin&quot;</span> &amp;&amp; pwd == <span class="string">&quot;123456&quot;</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> jwtConfig = configuration.GetSection(<span class="string">&quot;Jwt&quot;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="comment">//定义签名使用的密钥，以及使用Hmacsha256签名算法</span></span><br><span class="line">                <span class="keyword">var</span> securityKey = <span class="keyword">new</span> SigningCredentials(<span class="keyword">new</span> SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.GetValue&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Secret&quot;</span>))), SecurityAlgorithms.HmacSha256);</span><br><span class="line"></span><br><span class="line">                <span class="comment">//有效载荷</span></span><br><span class="line">                <span class="keyword">var</span> claims = <span class="keyword">new</span> Claim[] &#123;</span><br><span class="line">                    <span class="keyword">new</span> Claim(JwtRegisteredClaimNames.Iss,jwtConfig.GetValue&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Iss&quot;</span>)),</span><br><span class="line">                    <span class="keyword">new</span> Claim(JwtRegisteredClaimNames.Aud,jwtConfig.GetValue&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Aud&quot;</span>)),</span><br><span class="line">                    <span class="keyword">new</span> Claim(ClaimTypes.Name,<span class="string">&quot;admin&quot;</span>),</span><br><span class="line">                    <span class="keyword">new</span> Claim(ClaimTypes.NameIdentifier,<span class="string">&quot;1&quot;</span>),</span><br><span class="line">                    <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;system&quot;</span>),</span><br><span class="line">                    <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;admin&quot;</span>)</span><br><span class="line">                &#125;;</span><br><span class="line"></span><br><span class="line">                SecurityToken securityToken = <span class="keyword">new</span> JwtSecurityToken(</span><br><span class="line">                    signingCredentials: securityKey,</span><br><span class="line">                    expires: DateTime.Now.AddSeconds(jwtConfig.GetValue&lt;<span class="built_in">int</span>&gt;(<span class="string">&quot;ExpireSeconds&quot;</span>)), <span class="comment">//过期时间</span></span><br><span class="line">                    claims: claims</span><br><span class="line">                );</span><br><span class="line">                <span class="comment">//生成jwt令牌</span></span><br><span class="line">                <span class="keyword">return</span> Content(<span class="keyword">new</span> JwtSecurityTokenHandler().WriteToken(securityToken));</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> BadRequest(<span class="string">&quot;登陆失败&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>测试访问接口，可获得JWT</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2h1c2hpdG9uZy5naXRodWIuaW8iLCJhdWQiOiJhcGkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsic3lzdGVtIiwiYWRtaW4iXSwiZXhwIjoxNjQ0ODA4NjU0fQ.aqdRxdA9CakK_jrz-J3jTn2Rgu_2WkriHtLCJC61IcM</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="JWT-DemoApi使用JWT验证"><a href="#JWT-DemoApi使用JWT验证" class="headerlink" title="JWT.DemoApi使用JWT验证"></a>JWT.DemoApi使用JWT验证</h3><ol>
+<li><p>新建ASP.NET Core WebApi项目，我这里使用了3.1版本</p>
+</li>
+<li><p>nuget安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 需要根据自己的.net core版本选择相应版本</span><br><span class="line">Install-Package Microsoft.AspNetCore.Authentication.JwtBearer</span><br></pre></td></tr></table></figure></li>
+<li><p>在<code>appsettings.json</code>中添加上JWT相关配置，注意配置内容与JWT.Server里的基本一致，只是少了<code>ExpireSeconds</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;Jwt&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="comment">//密钥，需要大于等于16个字符，生产中密钥当然不能如下面这么简单</span></span><br><span class="line">  <span class="attr">&quot;Secret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;123456789@qwerasdf&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">//签发者</span></span><br><span class="line">  <span class="attr">&quot;Iss&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://hushitong.github.io&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">//使用者</span></span><br><span class="line">  <span class="attr">&quot;Aud&quot;</span><span class="punctuation">:</span> <span class="string">&quot;api&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li><p><code>Startup.ConfigureServices</code>里注册JWT</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获得使用的密钥</span></span><br><span class="line"><span class="keyword">var</span> jwtConfig = Configuration.GetSection(<span class="string">&quot;Jwt&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> signingKey = <span class="keyword">new</span> SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.GetValue&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Secret&quot;</span>)));</span><br><span class="line"><span class="comment">//认证参数</span></span><br><span class="line">services.AddAuthentication(<span class="string">&quot;Bearer&quot;</span>)</span><br><span class="line">    .AddJwtBearer(o =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        o.TokenValidationParameters = <span class="keyword">new</span> TokenValidationParameters</span><br><span class="line">        &#123;</span><br><span class="line">            ValidateIssuerSigningKey = <span class="literal">true</span>,<span class="comment">//是否验证签名,不验证的画可以篡改数据，不安全</span></span><br><span class="line">            IssuerSigningKey = signingKey,<span class="comment">//使用的密钥</span></span><br><span class="line">            ValidateIssuer = <span class="literal">true</span>,<span class="comment">//是否验证签发者，就是验证载荷中的Iss是否对应ValidIssuer参数</span></span><br><span class="line">            ValidIssuer = jwtConfig.GetValue&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Iss&quot;</span>),<span class="comment">//签发者</span></span><br><span class="line">            ValidateAudience = <span class="literal">true</span>,<span class="comment">//是否验证使用者，就是验证载荷中的Aud是否对应ValidAudience参数</span></span><br><span class="line">            ValidAudience = jwtConfig.GetValue&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Aud&quot;</span>),<span class="comment">//使用者</span></span><br><span class="line">            ValidateLifetime = <span class="literal">true</span>,<span class="comment">//是否验证过期时间，过期了就拒绝访问</span></span><br><span class="line">            ClockSkew = TimeSpan.Zero,<span class="comment">//这个是缓冲过期时间，也就是说，即使我们配置了过期时间，这里也要考虑进去，过期时间+缓冲，默认好像是7分钟，你可以直接设置为0</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>确保<code>Startup.Configure</code>方法中添加 了 <code>app.UseAuthorization()</code>及<code>app.UseAuthentication()</code>，没有就加上</p>
+<p>注意：<code>app.UseAuthentication()</code>你不加应用也不会报错，但是后续请求需要JWT验证的接口时会一直报401错误。</p>
+</li>
+<li><p>新建<code>JWTTestController</code>，添加相关测试代码，需要JWT验证的需要在Action上加上特性<code>[Authorize]</code></p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]/[action]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">JWTTestController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//不需要验证JWT</span></span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult <span class="title">GetWithoutAuth</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> Ok(<span class="string">&quot;访问成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//只验证JWT是否通过</span></span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    [<span class="meta">Authorize</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult <span class="title">GetWithAuth</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//使用HttpContext.User.Claims可以获得当前用户Payload里的信息</span></span><br><span class="line">        HttpContext.User.Claims.ToList().ForEach(x =&gt; Console.WriteLine(x));</span><br><span class="line">        <span class="keyword">return</span> Ok(<span class="string">&quot;访问成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//验证JWT是否通过同时还得验证其payload中是否由符合SuperAdmin的Role</span></span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    [<span class="meta">Authorize(Roles =<span class="string">&quot;SuperAdmin&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult <span class="title">GetWithRoleAuth</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> Ok(<span class="string">&quot;访问成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="JWT测试"><a href="#JWT测试" class="headerlink" title="JWT测试"></a>JWT测试</h3><p>准备工作：运行JWT.Server，获得JWT</p>
+<h4 id="访问JWT-DemoApi请求头不带JWT"><a href="#访问JWT-DemoApi请求头不带JWT" class="headerlink" title="访问JWT.DemoApi请求头不带JWT"></a>访问JWT.DemoApi请求头不带JWT</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">-- 请求：</span><br><span class="line">curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithoutAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">-- 响应：</span><br><span class="line">  Code：200</span><br><span class="line">  Response body：访问成功</span><br><span class="line"></span><br><span class="line">-- 请求：</span><br><span class="line">curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">-- 响应：</span><br><span class="line">  Code：401</span><br><span class="line">  Error: response status is 401</span><br><span class="line"></span><br><span class="line">-- 请求：</span><br><span class="line">curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithRoleAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">-- 响应：</span><br><span class="line">  Code：401</span><br><span class="line">  Error: response status is 401</span><br></pre></td></tr></table></figure>
+
+<p>可以看到添加了<code>[Authorize]</code>特性的接口都返回401 <em>(401 unauthorized，表示发送的请求需要有通过 HTTP 认证的认证信息)</em></p>
+<h4 id="访问JWT-DemoApi请求头带JWT"><a href="#访问JWT-DemoApi请求头带JWT" class="headerlink" title="访问JWT.DemoApi请求头带JWT"></a>访问JWT.DemoApi请求头带JWT</h4><p>使用Postman或其他你顺手的工具，在请求头加上<code>Authorization: Bearer JWTString</code>，即可使用JWT测试，我这里使用的时Swagger带JWT的办法。</p>
+<p>结果如下：</p>
+   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">-- 响应：</span><br><span class="line">curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithoutAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2h1c2hpdG9uZy5naXRodWIuaW8iLCJhdWQiOiJhcGkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsic3lzdGVtIiwiYWRtaW4iXSwiZXhwIjoxNjQ0ODM0NzkwfQ.-AoGFQAVjkbkEkPPrMd3f6a6K_v-QKIDJNGYb0S7xgU&#x27;</span></span><br><span class="line">-- 响应：</span><br><span class="line">  Code：200</span><br><span class="line">  Response body：访问成功</span><br><span class="line"></span><br><span class="line">-- 响应：</span><br><span class="line">curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2h1c2hpdG9uZy5naXRodWIuaW8iLCJhdWQiOiJhcGkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsic3lzdGVtIiwiYWRtaW4iXSwiZXhwIjoxNjQ0ODM0NzkwfQ.-AoGFQAVjkbkEkPPrMd3f6a6K_v-QKIDJNGYb0S7xgU&#x27;</span></span><br><span class="line">-- 响应：</span><br><span class="line">  Code：200</span><br><span class="line">  Response body：访问成功</span><br><span class="line"></span><br><span class="line">-- 响应：</span><br><span class="line"> curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithRoleAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2h1c2hpdG9uZy5naXRodWIuaW8iLCJhdWQiOiJhcGkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsic3lzdGVtIiwiYWRtaW4iXSwiZXhwIjoxNjQ0ODM0NzkwfQ.-AoGFQAVjkbkEkPPrMd3f6a6K_v-QKIDJNGYb0S7xgU&#x27;</span></span><br><span class="line">-- 响应：</span><br><span class="line">  Code：403</span><br><span class="line">  Error: response status is 403</span><br></pre></td></tr></table></figure>
+
+<p>请求头添加了JWT参数后，<code>GetWithAuth</code>接口成功，但是<code>GetWithRoleAuth</code>却是返回403 <em>(403 forbidden，表示对请求资源的访问被服务器拒绝)</em> ，这是因为该接口有特性<code>[Authorize(Roles =&quot;SuperAdmin&quot;)]</code>限定了需要有SuperAdmin角色才能访问，而前面JWT.Server所发放的JWT里并不包含该角色，想要测试通过，只需要在JWT.Server发放JWT时payload里添加上SuperAdmin角色，重新生成JWT再测试</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//有效载荷</span></span><br><span class="line"><span class="keyword">var</span> claims = <span class="keyword">new</span> Claim[] &#123;</span><br><span class="line">    <span class="keyword">new</span> Claim(JwtRegisteredClaimNames.Iss,jwtConfig.GetValue&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Iss&quot;</span>)),</span><br><span class="line">    <span class="keyword">new</span> Claim(JwtRegisteredClaimNames.Aud,jwtConfig.GetValue&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Aud&quot;</span>)),</span><br><span class="line">    <span class="keyword">new</span> Claim(ClaimTypes.Name,<span class="string">&quot;admin&quot;</span>),</span><br><span class="line">    <span class="keyword">new</span> Claim(ClaimTypes.NameIdentifier,<span class="string">&quot;1&quot;</span>),</span><br><span class="line">    <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;system&quot;</span>),</span><br><span class="line">    <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;admin&quot;</span>),</span><br><span class="line">    <span class="comment">//这里添加SuperAdmin角色</span></span><br><span class="line">    <span class="keyword">new</span> Claim(ClaimTypes.Role,<span class="string">&quot;SuperAdmin&quot;</span>)  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="访问JWT-DemoApi请求头带过期的JWT"><a href="#访问JWT-DemoApi请求头带过期的JWT" class="headerlink" title="访问JWT.DemoApi请求头带过期的JWT"></a>访问JWT.DemoApi请求头带过期的JWT</h4><p>我们获得JWT后，等待300秒（前面设定的）让其过期，然后测试，结果和 <a href="#%E8%AE%BF%E9%97%AEJWT-DemoApi%E8%AF%B7%E6%B1%82%E5%A4%B4%E4%B8%8D%E5%B8%A6JWT">访问JWT.DemoApi请求头不带JWT</a> 一致</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">-- 响应：</span><br><span class="line">curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithoutAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">-- 响应：</span><br><span class="line">  Code：200</span><br><span class="line">  Response body：访问成功</span><br><span class="line"></span><br><span class="line">-- 响应：</span><br><span class="line">curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">-- 响应：</span><br><span class="line">  Code：401</span><br><span class="line">  Error: response status is 401</span><br><span class="line"></span><br><span class="line">-- 响应：</span><br><span class="line">curl -X <span class="string">&#x27;GET&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://localhost:5001/api/JWTTest/GetWithRoleAuth&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;accept: */*&#x27;</span> \</span><br><span class="line">-- 响应：</span><br><span class="line">  Code：401</span><br><span class="line">  Error: response status is 401</span><br></pre></td></tr></table></figure>
+
+<h2 id="TokenValidationParameters常用内容说明"><a href="#TokenValidationParameters常用内容说明" class="headerlink" title="TokenValidationParameters常用内容说明"></a>TokenValidationParameters常用内容说明</h2><p><code>TokenValidationParameters</code>是和token验证有关的参数配置，进行token验证时需要用到，下面是我对着该类写常用内容说明</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TokenValidationParameters</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Token最大占用空间：250 KB (kilobytes).</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">int</span> DefaultMaximumTokenSizeInBytes = <span class="number">256000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 默认的缓冲过期时间为：300seconds (5 minutes).</span></span><br><span class="line">    <span class="comment">// 真实过期时间 = 过期时间 + 缓冲过期时间</span></span><br><span class="line">    [<span class="meta">DefaultValue(300)</span>]</span><br><span class="line">    <span class="keyword">public</span> TimeSpan ClockSkew;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//是否要求token必须包含过期时间。默认为true，即Jwt的Payload部分必须包含exp且具有有效值。</span></span><br><span class="line">    [<span class="meta">DefaultValue(true)</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> RequireExpirationTime;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//是否验证token是否在有效期内，即验证Jwt的Payload部分的nbf和exp。</span></span><br><span class="line">    [<span class="meta">DefaultValue(true)</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> ValidateLifetime</span><br><span class="line"></span><br><span class="line">    <span class="comment">//是否必须有签名部分，默认为true</span></span><br><span class="line">    [<span class="meta">DefaultValue(true)</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> RequireSignedTokens;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用于验证Jwt签名的密钥。</span></span><br><span class="line">    <span class="comment">//对于对称加密来说，加签和验签都是使用的同一个密钥；</span></span><br><span class="line">    <span class="comment">//对于非对称加密来说，使用私钥加签，然后使用公钥验签。</span></span><br><span class="line">    <span class="keyword">public</span> SecurityKey IssuerSigningKey;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#<span class="keyword">region</span> 受众</span></span><br><span class="line">    <span class="comment">//是否必须有受众，默认为true。</span></span><br><span class="line">    [<span class="meta">DefaultValue(true)</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> RequireAudience;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//是否验证受众，默认为true。</span></span><br><span class="line">    [<span class="meta">DefaultValue(true)</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> ValidateAudience</span><br><span class="line"></span><br><span class="line">    <span class="comment">//有效的受众，默认为null。ValidateAudience为true时，对比该值与Jwt的Payload部分的aud。</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> ValidAudience;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//有效的受众列表，可以指定多个受众,，默认为null。</span></span><br><span class="line">    <span class="keyword">public</span> IEnumerable&lt;<span class="built_in">string</span>&gt; ValidAudiences;</span><br><span class="line">    <span class="meta">#<span class="keyword">endregion</span></span></span><br><span class="line"></span><br><span class="line">    <span class="meta">#<span class="keyword">region</span> 签发者</span></span><br><span class="line">    <span class="comment">//是否验证签发者。默认为true。</span></span><br><span class="line">    [<span class="meta">DefaultValue(true)</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> ValidateIssuer;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//有效的签发者，默认为null，ValidateIssuer为true时，对比该值与Jwt的Payload部分的iss。</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> ValidIssuer;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//有效的签发者列表，可以指定多个签发者,，默认为null。</span></span><br><span class="line">    <span class="keyword">public</span> IEnumerable&lt;<span class="built_in">string</span>&gt; ValidIssuers;</span><br><span class="line">    <span class="meta">#<span class="keyword">endregion</span></span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//当token验证通过后，是否保存到Microsoft.AspNetCore.Authentication.AuthenticationProperties，默认false。</span></span><br><span class="line">    <span class="comment">//该操作发生在执行完JwtBearerEvents.TokenValidated之后。</span></span><br><span class="line">    <span class="comment">//想在后面代码里使用HttpContext.User.Claims可以获得当前用户Payload里的信息的话，需要设置true</span></span><br><span class="line">    [<span class="meta">DefaultValue(false)</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">bool</span> SaveSigninToken;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造函数，可以看到其默认设置</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TokenValidationParameters</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        RequireExpirationTime = <span class="literal">true</span>;</span><br><span class="line">        RequireSignedTokens = <span class="literal">true</span>;</span><br><span class="line">        RequireAudience = <span class="literal">true</span>;</span><br><span class="line">        SaveSigninToken = <span class="literal">false</span>;</span><br><span class="line">        ValidateActor = <span class="literal">false</span>;</span><br><span class="line">        ValidateAudience = <span class="literal">true</span>;</span><br><span class="line">        ValidateIssuer = <span class="literal">true</span>;</span><br><span class="line">        ValidateIssuerSigningKey = <span class="literal">false</span>;</span><br><span class="line">        ValidateLifetime = <span class="literal">true</span>;</span><br><span class="line">        ValidateTokenReplay = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="JwtBearerEvents"><a href="#JwtBearerEvents" class="headerlink" title="JwtBearerEvents"></a>JwtBearerEvents</h2><p>在验证JWT时，<code>Microsoft.AspNetCore.Authentication.JwtBearer</code>同时提供了一些额外事件来提供更有力的支持。</p>
+<h3 id="OnMessageReceived事件"><a href="#OnMessageReceived事件" class="headerlink" title="OnMessageReceived事件"></a>OnMessageReceived事件</h3><p>假设我们的接口会接受网页与App端请求，网页使用Cookies保存JWT信息，而App使用请求头。</p>
+<p>那我们需要在请求头中获得不了JWT信息时，再尝试去Cookie中获取，我们可以使用<code>OnMessageReceived</code>事件解决该需求。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//注册时添加OnMessageReceived</span></span><br><span class="line">services.AddAuthentication(<span class="string">&quot;Bearer&quot;</span>).AddJwtBearer(o =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//省略一些设置</span></span><br><span class="line">    </span><br><span class="line">    o.Events = <span class="keyword">new</span> JwtBearerEvents()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//该事件会在收到请求在验证JWT前触发</span></span><br><span class="line">        OnMessageReceived = context =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//假如在Header中没有包含JWT的参数，那就到Cookies去找</span></span><br><span class="line">            <span class="keyword">if</span> (!context.Request.Headers.ContainsKey(<span class="string">&quot;Authorization&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//获取到Cookies中的access_token，后续验证使用该token，并且在控制台输出</span></span><br><span class="line">                context.Token = context.Request.Cookies[<span class="string">&quot;access_token&quot;</span>];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> Task.CompletedTask;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//添加一个接口，在Cookies中添加access_token</span></span><br><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> ActionResult <span class="title">SetCookiesToken</span>(<span class="params"><span class="built_in">string</span> access_token</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    HttpContext.Response.Cookies.Append(<span class="string">&quot;access_token&quot;</span>, access_token);</span><br><span class="line">    <span class="keyword">return</span> Ok(<span class="string">&quot;设置Cookies成功&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由JWT.Server获得JWT后，先访问<code>SetCookiesToken</code>接口设置token，然后你就不需要再在请求头中添加JWT参数，同样可以访问需要验证接口，结果同 <a href="#%E8%AE%BF%E9%97%AEJWT.DemoApi%E8%AF%B7%E6%B1%82%E5%A4%B4%E5%B8%A6JWT">访问JWT.DemoApi请求头带JWT</a></p>
+<h3 id="其他事件"><a href="#其他事件" class="headerlink" title="其他事件"></a>其他事件</h3><p>通过查看<code>Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents</code>，发现除了<code>OnMessageReceived</code>事件外，还提供了如下几个事件：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Microsoft.AspNetCore.Authentication.JwtBearer</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Specifies events which the Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler invokes to enable developer control over the authentication process.</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">JwtBearerEvents</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Invoked if exceptions are thrown during request processing. The exceptions will be re-thrown after this event unless suppressed.</span></span><br><span class="line">        <span class="keyword">public</span> Func&lt;AuthenticationFailedContext, Task&gt; OnAuthenticationFailed</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Invoked if Authorization fails and results in a Forbidden response</span></span><br><span class="line">        <span class="keyword">public</span> Func&lt;ForbiddenContext, Task&gt; OnForbidden</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Invoked when a protocol message is first received.</span></span><br><span class="line">        <span class="keyword">public</span> Func&lt;MessageReceivedContext, Task&gt; OnMessageReceived</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Invoked after the security token has passed validation and a ClaimsIdentity has been generated.</span></span><br><span class="line">        <span class="keyword">public</span> Func&lt;TokenValidatedContext, Task&gt; OnTokenValidated</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Invoked before a challenge is sent back to the caller.</span></span><br><span class="line">        <span class="keyword">public</span> Func&lt;JwtBearerChallengeContext, Task&gt; OnChallenge</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="强制JWT失效"><a href="#强制JWT失效" class="headerlink" title="强制JWT失效"></a>强制JWT失效</h2><p>使用JWT本身是有一个问题的，那就是JWT本身在过期时间前都是有效的，这就会导致一些问题，如：账号被封后仍然能用，账号下线后实际其JWT仍可能被其他人利用，账号权限更改后不能实时生效等。</p>
+<p>有一些其他办法解决该问题，我这里提供其中一种办法，就是每个用户新对应一个JWTGenerations字段（int类型，从1开始，写入数据库）</p>
+<ul>
+<li><p>签发端：</p>
+<p>在JWT的Payload部分添加一个新字段<code>Generations</code>，其值为最新的JWTGenerations值。</p>
+</li>
+<li><p>服务端：</p>
+<p>验证JWT时，同时拿其<code>Generations</code>与最新的JWTGenerations值比较，只要小于最新的JWTGenerations值，那判定该JWT失效，让其重新登陆。</p>
+</li>
+</ul>
+<p>每当进行使该用户JWT失效的操作（如：用户登陆、用户登出、用户被封等）时，让该用户JWTGenerations值+1。</p>
+<p>JWTGenerations值在可以使用Redis等缓存保存以提升速度，然后每过10秒左右（时间根据实际自己定）主动去数据库拉取最新数据，也可以在进行使该用户JWT失效的操作后主动更新该信息都可以。</p>
+<p><strong>注意</strong>：该方案会造成只允许一个账号只能在一端登陆，其他端会被下线，需要其他办法再支持。</p>
+<h2 id="更多阅读"><a href="#更多阅读" class="headerlink" title="更多阅读"></a>更多阅读</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/RainingNight/p/jwtbearer-authentication-in-asp-net-core.html">ASP.NET Core 认证与授权4:JwtBearer认证</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/7tiny/p/11019698.html">asp.net core 集成JWT（二）token的强制失效，基于策略模式细化api权限</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xiaoxiaotank/p/15882735.html">理解ASP.NET Core - 基于JwtBearer的身份认证(Authentication) </a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NET-Core/" rel="tag"># .NET Core</a>
+              <a href="/tags/ASP-Net-Core/" rel="tag"># ASP.Net Core</a>
+              <a href="/tags/EF-Core/" rel="tag"># EF Core</a>
+              <a href="/tags/JWT/" rel="tag"># JWT</a>
+              <a href="/tags/Auth/" rel="tag"># Auth</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/+ASP.NETCore%E7%9A%84Filter/" rel="prev" title="ASP.NETCore的Filter">
+      <i class="fa fa-chevron-left"></i> ASP.NETCore的Filter
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/+ASP.NETCore%E5%A6%82%E4%BD%95%E8%A7%A3%E5%AF%86Cookie/" rel="next" title="ASP.NETCore如何解密Cookie">
+      ASP.NETCore如何解密Cookie <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E5%85%B3JWT%E7%9A%84%E5%9F%BA%E7%A1%80"><span class="nav-text">有关JWT的基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ASP-NET-Core%E4%BD%BF%E7%94%A8JWT"><span class="nav-text">ASP.NET Core使用JWT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JWT-Server%E7%94%9F%E6%88%90JWT"><span class="nav-text">JWT.Server生成JWT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JWT-DemoApi%E4%BD%BF%E7%94%A8JWT%E9%AA%8C%E8%AF%81"><span class="nav-text">JWT.DemoApi使用JWT验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JWT%E6%B5%8B%E8%AF%95"><span class="nav-text">JWT测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BF%E9%97%AEJWT-DemoApi%E8%AF%B7%E6%B1%82%E5%A4%B4%E4%B8%8D%E5%B8%A6JWT"><span class="nav-text">访问JWT.DemoApi请求头不带JWT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BF%E9%97%AEJWT-DemoApi%E8%AF%B7%E6%B1%82%E5%A4%B4%E5%B8%A6JWT"><span class="nav-text">访问JWT.DemoApi请求头带JWT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BF%E9%97%AEJWT-DemoApi%E8%AF%B7%E6%B1%82%E5%A4%B4%E5%B8%A6%E8%BF%87%E6%9C%9F%E7%9A%84JWT"><span class="nav-text">访问JWT.DemoApi请求头带过期的JWT</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TokenValidationParameters%E5%B8%B8%E7%94%A8%E5%86%85%E5%AE%B9%E8%AF%B4%E6%98%8E"><span class="nav-text">TokenValidationParameters常用内容说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JwtBearerEvents"><span class="nav-text">JwtBearerEvents</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OnMessageReceived%E4%BA%8B%E4%BB%B6"><span class="nav-text">OnMessageReceived事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E4%BA%8B%E4%BB%B6"><span class="nav-text">其他事件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%BA%E5%88%B6JWT%E5%A4%B1%E6%95%88"><span class="nav-text">强制JWT失效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E5%A4%9A%E9%98%85%E8%AF%BB"><span class="nav-text">更多阅读</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Singo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hushitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hushitong" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hushitong@163.com" title="E-Mail → mailto:hushitong@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hushitong@163.com</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">47k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">42 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
