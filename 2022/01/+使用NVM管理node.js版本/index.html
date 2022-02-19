@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="什么是NVM全名node.js version management，是一个node.js的版本管理工具。通过它可以安装和切换不同版本的 nodejs。 其主要解决不同项目所需node.js版本不一致时管理的麻烦，就比如我弄hexo主题，不同的主题需要的nodejs版本不一致，没有这来管理，我得不停安装卸载nodejs来测试，还要修改环境变量等，十分麻烦，使用这工具就能很轻松管理。 使用步骤第一步">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用NVM管理node.js版本">
+<meta property="og:url" content="http://hushitong.github.io/2022/01/+%E4%BD%BF%E7%94%A8NVM%E7%AE%A1%E7%90%86node.js%E7%89%88%E6%9C%AC/index.html">
+<meta property="og:site_name" content="Singo&#39;Sky">
+<meta property="og:description" content="什么是NVM全名node.js version management，是一个node.js的版本管理工具。通过它可以安装和切换不同版本的 nodejs。 其主要解决不同项目所需node.js版本不一致时管理的麻烦，就比如我弄hexo主题，不同的主题需要的nodejs版本不一致，没有这来管理，我得不停安装卸载nodejs来测试，还要修改环境变量等，十分麻烦，使用这工具就能很轻松管理。 使用步骤第一步">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-01T16:00:00.000Z">
+<meta property="article:author" content="Singo">
+<meta property="article:tag" content="NVM">
+<meta property="article:tag" content="npm">
+<meta property="article:tag" content="nodejs">
+<meta property="article:tag" content="版本管理">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hushitong.github.io/2022/01/+%E4%BD%BF%E7%94%A8NVM%E7%AE%A1%E7%90%86node.js%E7%89%88%E6%9C%AC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用NVM管理node.js版本 | Singo'Sky</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Singo'Sky</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hushitong.github.io/2022/01/+%E4%BD%BF%E7%94%A8NVM%E7%AE%A1%E7%90%86node.js%E7%89%88%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Singo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Singo'Sky">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用NVM管理node.js版本
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-02 00:00:00" itemprop="dateCreated datePublished" datetime="2022-01-02T00:00:00+08:00">2022-01-02</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是NVM"><a href="#什么是NVM" class="headerlink" title="什么是NVM"></a>什么是NVM</h2><p>全名<strong>node.js version management</strong>，是一个<strong>node.js的版本管理工具</strong>。通过它可以安装和切换不同版本的 nodejs。</p>
+<p>其主要解决不同项目所需node.js版本不一致时管理的麻烦，就比如我弄hexo主题，不同的主题需要的nodejs版本不一致，没有这来管理，我得不停安装卸载nodejs来测试，还要修改环境变量等，十分麻烦，使用这工具就能很轻松管理。</p>
+<h2 id="使用步骤"><a href="#使用步骤" class="headerlink" title="使用步骤"></a>使用步骤</h2><h3 id="第一步：卸载你的NodeJs"><a href="#第一步：卸载你的NodeJs" class="headerlink" title="第一步：卸载你的NodeJs"></a>第一步：卸载你的NodeJs</h3><p>将电脑现在装的node进行卸载，最好是删除所有关于node的文件及内容</p>
+<h3 id="第二步：安装NVM"><a href="#第二步：安装NVM" class="headerlink" title="第二步：安装NVM"></a>第二步：安装NVM</h3><p>通过Github服务器<a target="_blank" rel="noopener" href="https://github.com/coreybutler/nvm-windows/releases">下载安装</a></p>
+<p>下载完成后，按照安装操作一步一步安装就好了，很简单。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nvm-noinstall.zip： 这个是绿色免安装版本，但是使用之前需要配置</span><br><span class="line">nvm-setup.zip：这是一个安装包，下载之后点击安装，无需配置就可以使用，方便。</span><br><span class="line">Source code(zip)：zip压缩的源码</span><br><span class="line">Sourc code(tar.gz)：tar.gz的源码，一般用于Linux系统</span><br></pre></td></tr></table></figure>
+
+<p>建议下载nvm-setup.zip版本，配置我怕你不会弄弄乱了也不懂改。</p>
+<p>打开zip文件，运行exe文件安装，我建议把nvm与node相关都统合在一起，以后好管理，我统一都在<code>C:\Env</code>下，NVM安装地址就填<code>C:\Env\NVM</code>，nodejs安装地址就填<code>C:\Env\nodejs</code>，安装完后你会看到<code>C:\Env</code>目录下有NVM文件夹，但是没有nodejs文件夹，这是因为前面的nodejs地址填的是以后nodejs的访问地址，现在还没有安装并使用nodejs自然就没有。</p>
+<h3 id="第三步：测试nvm是否安装成功"><a href="#第三步：测试nvm是否安装成功" class="headerlink" title="第三步：测试nvm是否安装成功"></a>第三步：测试nvm是否安装成功</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nvm -v</span><br><span class="line">//version 1.1.6  出现版本号，说明安装成功，接下来就可以进行下面的操作</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四步：安装并控制node版本"><a href="#第四步：安装并控制node版本" class="headerlink" title="第四步：安装并控制node版本"></a>第四步：安装并控制node版本</h3><p>前面完成后，接下来就可以安装并随意切换我们的node版本号了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nvm list available  // 首先可以通过命令来查询我们可以安装的node版本</span><br><span class="line">nvm install 10.5.0  // 安装指定的版本的nodejs</span><br><span class="line">nvm <span class="built_in">ls</span>   // 查看目前已经安装的版本</span><br><span class="line">nvm use 10.5.0  // 使用指定版本的nodejs，需要权限较高，windows下需要管理员权限</span><br></pre></td></tr></table></figure>
+
+<p>可以通过<code>nvm install</code>命令安装多个版本的nodejs，然后通过<code>nvm use</code>命令来切换要是用的版本号。</p>
+<p>通过切换版本号后，可以通过<code>node -v</code>命令来检测是否使用成功。</p>
+<h4 id="镜像加速"><a href="#镜像加速" class="headerlink" title="镜像加速"></a>镜像加速</h4><p>由于国外的镜像源下载慢，可以使用命令更改为Taobao的源。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nvm node_mirror https://npm.taobao.org/mirrors/node/</span><br><span class="line">nvm npm_mirror https://npm.taobao.org/mirrors/npm/</span><br></pre></td></tr></table></figure>
+
+<h2 id="NVM常用命令"><a href="#NVM常用命令" class="headerlink" title="NVM常用命令"></a>NVM常用命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">nvm off                     // 禁用node.js版本管理(不卸载任何东西)</span><br><span class="line">nvm on                      // 启用node.js版本管理</span><br><span class="line">nvm install &lt;version&gt;       // 安装node.js的命名 version是版本号 例如：nvm install 8.12.0</span><br><span class="line">nvm uninstall &lt;version&gt;     // 卸载node.js是的命令，卸载指定版本的nodejs，当安装失败时卸载使用</span><br><span class="line">nvm <span class="built_in">ls</span>                      // 显示所有已安装的node.js版本</span><br><span class="line">nvm list available          // 显示可以安装的所有node.js的版本</span><br><span class="line">nvm use &lt;version&gt;           // 切换到使用指定的nodejs版本</span><br><span class="line">nvm v                       // 显示nvm版本</span><br><span class="line">nvm install stable          // 安装最新稳定版</span><br></pre></td></tr></table></figure>
+
+<h2 id="可能遇到问题解决"><a href="#可能遇到问题解决" class="headerlink" title="可能遇到问题解决"></a>可能遇到问题解决</h2><ul>
+<li><p>windows 上安装 nvm 后选择 node 版本出现 exit status 1…</p>
+<p>问题：nvm install x.x.x 可以安装成功，但无法切换和使用，报错 exit status 1</p>
+<p>原因1：把 nvm 安装到了有空格的路径上（D:\Program Files），导致切换失败</p>
+<p>解决1：把 nvm 卸载重装到没有空格的路径上（例如：D:\nvm），即可解决问题</p>
+<p>原因2：Cmd命令权限不足</p>
+<p>解决2：使用 <strong>以管理员身份运行</strong> 运行<code>Cmd</code>程序，然后再运行<code>nvm</code>命令</p>
+</li>
+<li><p>nvm 在 CMD 中不生效</p>
+<p>报错：nvm : 无法将 nvm 项识别为 cmdlet、函数、脚本文件或可运行程序的名称。</p>
+<p>意思就是<code>nvm</code>还不是个命令，说明没有配置成功。</p>
+<p>原因：当环境变量没配正确时（使用免安装版时需要配置环境变量），重启也不会生效。在确保环境变量配置正确后，重启<code>cmd</code>控制台后会生效。</p>
+</li>
+<li><p>npm Download failed</p>
+<p>有时候安装 node 安装成功之后，会去安装 npm 有时候就会报错 npm 拒绝啥的，具体报错没有记录</p>
+<p>解决：使用镜像加速（把镜像加速的那2行加入，重新开 cmd 安装即可）</p>
+</li>
+<li><p>node 版本安装成功，但是使用时还是之前的版本</p>
+<p>如之前安装过node版本 10.15.0，没有卸载，直接安装的 nvm，并用 nvm 安装了 14.18.1 的 node。如下切换成 14.18.1 版本也正常，但是查看 node -v 却还是之前的版本。</p>
+<p>解决：<strong>在安装 NVM for Windows 之前，您需要卸载任何现有版本的 node.js，还需要删除任何现有nodejs安装目录</strong>。</p>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/goloving/p/15401739.html">浅析nvm介绍、安装与使用以及遇到的问题解决</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NVM/" rel="tag"># NVM</a>
+              <a href="/tags/npm/" rel="tag"># npm</a>
+              <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+              <a href="/tags/%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86/" rel="tag"># 版本管理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/+%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80%E5%85%B3%E9%97%ADsqlserver%E7%9B%B8%E5%85%B3%E6%9C%8D%E5%8A%A1/" rel="next" title="快速打开关闭sqlserver相关服务">
+      快速打开关闭sqlserver相关服务 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFNVM"><span class="nav-text">什么是NVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%AD%A5%E9%AA%A4"><span class="nav-text">使用步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%8D%B8%E8%BD%BD%E4%BD%A0%E7%9A%84NodeJs"><span class="nav-text">第一步：卸载你的NodeJs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%AE%89%E8%A3%85NVM"><span class="nav-text">第二步：安装NVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E6%B5%8B%E8%AF%95nvm%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F"><span class="nav-text">第三步：测试nvm是否安装成功</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E5%AE%89%E8%A3%85%E5%B9%B6%E6%8E%A7%E5%88%B6node%E7%89%88%E6%9C%AC"><span class="nav-text">第四步：安装并控制node版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%95%9C%E5%83%8F%E5%8A%A0%E9%80%9F"><span class="nav-text">镜像加速</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NVM%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">NVM常用命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%83%BD%E9%81%87%E5%88%B0%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="nav-text">可能遇到问题解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Singo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hushitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hushitong" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hushitong@163.com" title="E-Mail → mailto:hushitong@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hushitong@163.com</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">50k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">46 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

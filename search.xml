@@ -1,72 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>ASP.NETCore使用Swagger</title>
-    <url>/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8Swagger/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是swagger"><a href="#什么是swagger" class="headerlink" title="什么是swagger"></a>什么是swagger</h2><p><a href="https://swagger.io/">swagger</a>是一款RESTFUL接口的文档在线自动生成+功能测试功能软件。Swagger是一个规范和完整的框架，用于生成、描述、调用和可视化RESTful风格的Web服务。</p>
-<p>简单来讲，使用swagger能够自动生成友好的在线接口文档，并且支持接口测试，其好处：</p>
-<ul>
-<li>对后端人员：减少了编写接口后还要花费时间同步更新接口文档，且与前端沟通的时间成本。</li>
-<li>对前端人员：能够直观的快速的看到接口，并且进行在线测试，方便了调试调用接口，不用因接口问题频繁与后端沟通。</li>
-</ul>
-<span id="more"></span>
-
-<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><p>框架.net3.1默认没有swagger，需要自己弄，以下简单写步骤</p>
-<ol>
-<li><p>nuget安装</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Install-Package</span> Swashbuckle.AspNetCore</span><br></pre></td></tr></table></figure></li>
-<li><p>Startup.cs文件引入命名空间</p>
-   <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> Swashbuckle.AspNetCore.Swagger;</span><br><span class="line"><span class="keyword">using</span> Microsoft.OpenApi.Models;</span><br></pre></td></tr></table></figure></li>
-<li><p>将 Swagger 生成器添加到 <code>Startup.ConfigureServices</code> 方法中的服务集合中</p>
-   <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//注册Swagger生成器，定义一个和多个Swagger 文档</span></span><br><span class="line">services.AddSwaggerGen(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">     c.SwaggerDoc(<span class="string">&quot;v1&quot;</span>, <span class="keyword">new</span> OpenApiInfo &#123; Title = <span class="string">&quot;My API&quot;</span>, Version = <span class="string">&quot;v1&quot;</span> &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-<li><p>在 <code>Startup.Configure</code> 方法中，启用中间件为生成的 JSON 文档和 Swagger UI 提供服务</p>
-   <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//启用中间件服务生成Swagger作为JSON终结点</span></span><br><span class="line">app.UseSwagger();</span><br><span class="line"><span class="comment">//启用中间件服务对swagger-ui，指定Swagger JSON终结点</span></span><br><span class="line">app.UseSwaggerUI(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.SwaggerEndpoint(<span class="string">&quot;/swagger/v1/swagger.json&quot;</span>, <span class="string">&quot;My API V1&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-<li><p>此时启动项目就可通过<code>http://localhost:&lt;port&gt;/swagger</code>地址访问Swagger UI浏览API文档。</p>
-<p>   也可通过<code>http://localhost:&lt;port&gt;/swagger/v1/swagger.json</code>地址访问生成的描述终结点的json文档。</p>
-</li>
-<li><p>如果要想通过<code>http://localhost:&lt;port&gt;/</code>就访问Swagger UI，修改启用中间件SwaggerUI的方法<code>UseSwaggerUI</code>，把<code>RoutePrefix</code> 属性设置为空字符串。</p>
-   <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">app.UseSwaggerUI(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.SwaggerEndpoint(<span class="string">&quot;/swagger/v1/swagger.json&quot;</span>, <span class="string">&quot;My API V1&quot;</span>);</span><br><span class="line">    c.RoutePrefix = <span class="built_in">string</span>.Empty;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="添加版本控制"><a href="#添加版本控制" class="headerlink" title="添加版本控制"></a>添加版本控制</h2><h3 id="步骤-1"><a href="#步骤-1" class="headerlink" title="步骤"></a>步骤</h3><ol>
-<li><p>添加API枚举类型</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 版本控制</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="keyword">public</span> <span class="built_in">enum</span> ApiVersion</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> v1版本</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    V1 = <span class="number">1</span>,</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> v2版本</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    V2 = <span class="number">2</span></span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>修改<code>Startup.ConfigureServices</code>里注册Swagger的代码</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//注册Swagger生成器，定义一个和多个Swagger 文档</span></span><br><span class="line">services.AddSwaggerGen(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//遍历版本信息</span></span><br><span class="line">    <span class="keyword">typeof</span>(ApiVersion).GetEnumNames().ToList().ForEach(version =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        c.SwaggerDoc(version, <span class="keyword">new</span> OpenApiInfo</span><br><span class="line">        &#123;</span><br><span class="line">            Version = version, <span class="comment">//版本号</span></span><br><span class="line">            Title = <span class="string">$&quot;My API <span class="subst">&#123;version&#125;</span>&quot;</span>, <span class="comment">//标题</span></span><br><span class="line">            Description = <span class="string">$&quot;My ASP.NET Core Web API <span class="subst">&#123;version&#125;</span>&quot;</span>, <span class="comment">//描述</span></span><br><span class="line">            <span class="comment">//上面三项最后设置，下面的三项可以不用</span></span><br><span class="line">            TermsOfService = <span class="keyword">new</span> Uri(<span class="string">&quot;https://example.com/terms&quot;</span>), <span class="comment">//服务条款</span></span><br><span class="line">            Contact = <span class="keyword">new</span> OpenApiContact</span><br><span class="line">            &#123;</span><br><span class="line">                Name = <span class="string">&quot;Singo&quot;</span>, <span class="comment">//联系人</span></span><br><span class="line">                Email = <span class="built_in">string</span>.Empty,  <span class="comment">//邮箱</span></span><br><span class="line">                Url = <span class="keyword">new</span> Uri(<span class="string">&quot;https://github.com/hushitong&quot;</span>),<span class="comment">//网站</span></span><br><span class="line">            &#125;,</span><br><span class="line">            License = <span class="keyword">new</span> OpenApiLicense</span><br><span class="line">            &#123;</span><br><span class="line">                Name = <span class="string">&quot;Use under LICX&quot;</span>, <span class="comment">//协议</span></span><br><span class="line">                Url = <span class="keyword">new</span> Uri(<span class="string">&quot;https://example.com/license&quot;</span>), <span class="comment">//协议地址</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-<li><p>修改<code>Startup.Configure</code> 里启用中间件的设置</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//启用中间件服务生成Swagger作为JSON终结点</span></span><br><span class="line">app.UseSwagger();</span><br><span class="line"><span class="comment">//启用中间件服务对swagger-ui，指定Swagger JSON终结点</span></span><br><span class="line">app.UseSwaggerUI(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.RoutePrefix = <span class="built_in">string</span>.Empty;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">typeof</span>(ApiVersion).GetEnumNames().ToList().ForEach(version =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//描述终结点的json文档</span></span><br><span class="line">        c.SwaggerEndpoint(<span class="string">$&quot;/swagger/<span class="subst">&#123;version&#125;</span>/swagger.json&quot;</span>, version);</span><br><span class="line">        <span class="comment">//设置为none可折叠所有方法</span></span><br><span class="line">        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-<li><p>然后就是使用ApiExplorerSettingsAttribute标注各个版本Controller，然后修改路由信息</p>
-<p>原来的标注为</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">ApiExplorerSettings(GroupName = nameof(ApiVersion.V1))</span>]</span><br></pre></td></tr></table></figure>
-
-<p>后来的根据需要标注</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">ApiExplorerSettings(GroupName = nameof(ApiVersion.V2))</span>]</span><br></pre></td></tr></table></figure></li>
-<li><p>启动后就可以通过右上角的下拉框选择需要的版本进行测试了</p>
-</li>
-</ol>
-<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>有关版本控制实际有很多办法，如：可以查看<a href="https://www.cnblogs.com/Leo_wl/p/7508650.html">Net Core WebApi几种版本控制对比</a></p>
-<h2 id="添加JWT支持"><a href="#添加JWT支持" class="headerlink" title="添加JWT支持"></a>添加JWT支持</h2><ol>
-<li><p>修改<code>Startup.ConfigureServices</code>里注册Swagger的代码</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//注册Swagger生成器，定义一个和多个Swagger 文档</span></span><br><span class="line">services.AddSwaggerGen(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.SwaggerDoc(<span class="string">&quot;v1&quot;</span>, <span class="keyword">new</span> OpenApiInfo &#123; Title = <span class="string">&quot;My API&quot;</span>, Version = <span class="string">&quot;v1&quot;</span> &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="meta">#<span class="keyword">region</span> 添加JWT支持</span></span><br><span class="line">    c.AddSecurityDefinition(<span class="string">&quot;Bearer&quot;</span>, <span class="keyword">new</span> OpenApiSecurityScheme()</span><br><span class="line">    &#123;</span><br><span class="line">        Description = <span class="string">&quot;在下框中输入请求头中需要添加Jwt授权Token：Bearer Token&quot;</span>,</span><br><span class="line">        Name = <span class="string">&quot;Authorization&quot;</span>, <span class="comment">//设置其key名，请求时会添加上，默认使用Authorization名</span></span><br><span class="line">        In = ParameterLocation.Header, <span class="comment">//在请求头添加JWT Token</span></span><br><span class="line">        Type = SecuritySchemeType.ApiKey,</span><br><span class="line">        BearerFormat = <span class="string">&quot;JWT&quot;</span>,</span><br><span class="line">        Scheme = <span class="string">&quot;Bearer&quot;</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    c.AddSecurityRequirement(<span class="keyword">new</span> OpenApiSecurityRequirement</span><br><span class="line">    &#123;</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">new</span> OpenApiSecurityScheme</span><br><span class="line">            &#123;</span><br><span class="line">                Reference = <span class="keyword">new</span> OpenApiReference &#123;</span><br><span class="line">                    Type = ReferenceType.SecurityScheme,</span><br><span class="line">                    Id = <span class="string">&quot;Bearer&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="meta">#<span class="keyword">endregion</span></span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
-<li><p>运行进入SeaggerUI页面，可以看到在页面右上角多了一个<code>Authorize</code>按钮，点击在value框可以填入<code>bear &lt;your jwt string&gt;</code>，以后请求头都会带上<code>Authorization: bear &lt;your jwt string&gt;</code></p>
-<p><img src="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/SwaggerWithJWT.png" alt="SwaggerWithJWT"></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Dev</category>
-        <category>.Net Core</category>
-        <category>ASP.NET Core</category>
-      </categories>
-      <tags>
-        <tag>ASP.NET Core</tag>
-        <tag>.Net Core</tag>
-        <tag>文档</tag>
-        <tag>Swagger</tag>
-        <tag>版本控制</tag>
-        <tag>JWT</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ASP.NET Core使用JWT</title>
     <url>/2022/02/+ASP.NETCore%E4%BD%BF%E7%94%A8JWT/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="有关JWT的基础"><a href="#有关JWT的基础" class="headerlink" title="有关JWT的基础"></a>有关JWT的基础</h2><p>看这文章之前需要先对JWT有了解，不过这部分已经有很多很好的文章，这边我就不再叙述，你可以看如 <a href="https://www.cnblogs.com/RainingNight/p/jwtbearer-authentication-in-asp-net-core.html">ASP.NET Core 认证与授权4:JwtBearer认证</a> 前面的介绍。</p>
@@ -149,11 +83,77 @@
         <category>ASP.NET Core</category>
       </categories>
       <tags>
-        <tag>JWT</tag>
         <tag>.NET Core</tag>
         <tag>ASP.Net Core</tag>
         <tag>EF Core</tag>
+        <tag>JWT</tag>
         <tag>Auth</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ASP.NETCore使用Swagger</title>
+    <url>/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8Swagger/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是swagger"><a href="#什么是swagger" class="headerlink" title="什么是swagger"></a>什么是swagger</h2><p><a href="https://swagger.io/">swagger</a>是一款RESTFUL接口的文档在线自动生成+功能测试功能软件。Swagger是一个规范和完整的框架，用于生成、描述、调用和可视化RESTful风格的Web服务。</p>
+<p>简单来讲，使用swagger能够自动生成友好的在线接口文档，并且支持接口测试，其好处：</p>
+<ul>
+<li>对后端人员：减少了编写接口后还要花费时间同步更新接口文档，且与前端沟通的时间成本。</li>
+<li>对前端人员：能够直观的快速的看到接口，并且进行在线测试，方便了调试调用接口，不用因接口问题频繁与后端沟通。</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><p>框架.net3.1默认没有swagger，需要自己弄，以下简单写步骤</p>
+<ol>
+<li><p>nuget安装</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Install-Package</span> Swashbuckle.AspNetCore</span><br></pre></td></tr></table></figure></li>
+<li><p>Startup.cs文件引入命名空间</p>
+   <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> Swashbuckle.AspNetCore.Swagger;</span><br><span class="line"><span class="keyword">using</span> Microsoft.OpenApi.Models;</span><br></pre></td></tr></table></figure></li>
+<li><p>将 Swagger 生成器添加到 <code>Startup.ConfigureServices</code> 方法中的服务集合中</p>
+   <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//注册Swagger生成器，定义一个和多个Swagger 文档</span></span><br><span class="line">services.AddSwaggerGen(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">     c.SwaggerDoc(<span class="string">&quot;v1&quot;</span>, <span class="keyword">new</span> OpenApiInfo &#123; Title = <span class="string">&quot;My API&quot;</span>, Version = <span class="string">&quot;v1&quot;</span> &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>在 <code>Startup.Configure</code> 方法中，启用中间件为生成的 JSON 文档和 Swagger UI 提供服务</p>
+   <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//启用中间件服务生成Swagger作为JSON终结点</span></span><br><span class="line">app.UseSwagger();</span><br><span class="line"><span class="comment">//启用中间件服务对swagger-ui，指定Swagger JSON终结点</span></span><br><span class="line">app.UseSwaggerUI(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.SwaggerEndpoint(<span class="string">&quot;/swagger/v1/swagger.json&quot;</span>, <span class="string">&quot;My API V1&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>此时启动项目就可通过<code>http://localhost:&lt;port&gt;/swagger</code>地址访问Swagger UI浏览API文档。</p>
+<p>   也可通过<code>http://localhost:&lt;port&gt;/swagger/v1/swagger.json</code>地址访问生成的描述终结点的json文档。</p>
+</li>
+<li><p>如果要想通过<code>http://localhost:&lt;port&gt;/</code>就访问Swagger UI，修改启用中间件SwaggerUI的方法<code>UseSwaggerUI</code>，把<code>RoutePrefix</code> 属性设置为空字符串。</p>
+   <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">app.UseSwaggerUI(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.SwaggerEndpoint(<span class="string">&quot;/swagger/v1/swagger.json&quot;</span>, <span class="string">&quot;My API V1&quot;</span>);</span><br><span class="line">    c.RoutePrefix = <span class="built_in">string</span>.Empty;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="添加版本控制"><a href="#添加版本控制" class="headerlink" title="添加版本控制"></a>添加版本控制</h2><h3 id="步骤-1"><a href="#步骤-1" class="headerlink" title="步骤"></a>步骤</h3><ol>
+<li><p>添加API枚举类型</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 版本控制</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="keyword">public</span> <span class="built_in">enum</span> ApiVersion</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> v1版本</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    V1 = <span class="number">1</span>,</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> v2版本</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    V2 = <span class="number">2</span></span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>修改<code>Startup.ConfigureServices</code>里注册Swagger的代码</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//注册Swagger生成器，定义一个和多个Swagger 文档</span></span><br><span class="line">services.AddSwaggerGen(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//遍历版本信息</span></span><br><span class="line">    <span class="keyword">typeof</span>(ApiVersion).GetEnumNames().ToList().ForEach(version =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        c.SwaggerDoc(version, <span class="keyword">new</span> OpenApiInfo</span><br><span class="line">        &#123;</span><br><span class="line">            Version = version, <span class="comment">//版本号</span></span><br><span class="line">            Title = <span class="string">$&quot;My API <span class="subst">&#123;version&#125;</span>&quot;</span>, <span class="comment">//标题</span></span><br><span class="line">            Description = <span class="string">$&quot;My ASP.NET Core Web API <span class="subst">&#123;version&#125;</span>&quot;</span>, <span class="comment">//描述</span></span><br><span class="line">            <span class="comment">//上面三项最后设置，下面的三项可以不用</span></span><br><span class="line">            TermsOfService = <span class="keyword">new</span> Uri(<span class="string">&quot;https://example.com/terms&quot;</span>), <span class="comment">//服务条款</span></span><br><span class="line">            Contact = <span class="keyword">new</span> OpenApiContact</span><br><span class="line">            &#123;</span><br><span class="line">                Name = <span class="string">&quot;Singo&quot;</span>, <span class="comment">//联系人</span></span><br><span class="line">                Email = <span class="built_in">string</span>.Empty,  <span class="comment">//邮箱</span></span><br><span class="line">                Url = <span class="keyword">new</span> Uri(<span class="string">&quot;https://github.com/hushitong&quot;</span>),<span class="comment">//网站</span></span><br><span class="line">            &#125;,</span><br><span class="line">            License = <span class="keyword">new</span> OpenApiLicense</span><br><span class="line">            &#123;</span><br><span class="line">                Name = <span class="string">&quot;Use under LICX&quot;</span>, <span class="comment">//协议</span></span><br><span class="line">                Url = <span class="keyword">new</span> Uri(<span class="string">&quot;https://example.com/license&quot;</span>), <span class="comment">//协议地址</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>修改<code>Startup.Configure</code> 里启用中间件的设置</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//启用中间件服务生成Swagger作为JSON终结点</span></span><br><span class="line">app.UseSwagger();</span><br><span class="line"><span class="comment">//启用中间件服务对swagger-ui，指定Swagger JSON终结点</span></span><br><span class="line">app.UseSwaggerUI(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.RoutePrefix = <span class="built_in">string</span>.Empty;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">typeof</span>(ApiVersion).GetEnumNames().ToList().ForEach(version =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//描述终结点的json文档</span></span><br><span class="line">        c.SwaggerEndpoint(<span class="string">$&quot;/swagger/<span class="subst">&#123;version&#125;</span>/swagger.json&quot;</span>, version);</span><br><span class="line">        <span class="comment">//设置为none可折叠所有方法</span></span><br><span class="line">        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>然后就是使用ApiExplorerSettingsAttribute标注各个版本Controller，然后修改路由信息</p>
+<p>原来的标注为</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">ApiExplorerSettings(GroupName = nameof(ApiVersion.V1))</span>]</span><br></pre></td></tr></table></figure>
+
+<p>后来的根据需要标注</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">ApiExplorerSettings(GroupName = nameof(ApiVersion.V2))</span>]</span><br></pre></td></tr></table></figure></li>
+<li><p>启动后就可以通过右上角的下拉框选择需要的版本进行测试了</p>
+</li>
+</ol>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>有关版本控制实际有很多办法，如：可以查看<a href="https://www.cnblogs.com/Leo_wl/p/7508650.html">Net Core WebApi几种版本控制对比</a></p>
+<h2 id="添加JWT支持"><a href="#添加JWT支持" class="headerlink" title="添加JWT支持"></a>添加JWT支持</h2><ol>
+<li><p>修改<code>Startup.ConfigureServices</code>里注册Swagger的代码</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">//注册Swagger生成器，定义一个和多个Swagger 文档</span></span><br><span class="line">services.AddSwaggerGen(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.SwaggerDoc(<span class="string">&quot;v1&quot;</span>, <span class="keyword">new</span> OpenApiInfo &#123; Title = <span class="string">&quot;My API&quot;</span>, Version = <span class="string">&quot;v1&quot;</span> &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="meta">#<span class="keyword">region</span> 添加JWT支持</span></span><br><span class="line">    c.AddSecurityDefinition(<span class="string">&quot;Bearer&quot;</span>, <span class="keyword">new</span> OpenApiSecurityScheme()</span><br><span class="line">    &#123;</span><br><span class="line">        Description = <span class="string">&quot;在下框中输入请求头中需要添加Jwt授权Token：Bearer Token&quot;</span>,</span><br><span class="line">        Name = <span class="string">&quot;Authorization&quot;</span>, <span class="comment">//设置其key名，请求时会添加上，默认使用Authorization名</span></span><br><span class="line">        In = ParameterLocation.Header, <span class="comment">//在请求头添加JWT Token</span></span><br><span class="line">        Type = SecuritySchemeType.ApiKey,</span><br><span class="line">        BearerFormat = <span class="string">&quot;JWT&quot;</span>,</span><br><span class="line">        Scheme = <span class="string">&quot;Bearer&quot;</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    c.AddSecurityRequirement(<span class="keyword">new</span> OpenApiSecurityRequirement</span><br><span class="line">    &#123;</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">new</span> OpenApiSecurityScheme</span><br><span class="line">            &#123;</span><br><span class="line">                Reference = <span class="keyword">new</span> OpenApiReference &#123;</span><br><span class="line">                    Type = ReferenceType.SecurityScheme,</span><br><span class="line">                    Id = <span class="string">&quot;Bearer&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="meta">#<span class="keyword">endregion</span></span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>运行进入SeaggerUI页面，可以看到在页面右上角多了一个<code>Authorize</code>按钮，点击在value框可以填入<code>bear &lt;your jwt string&gt;</code>，以后请求头都会带上<code>Authorization: bear &lt;your jwt string&gt;</code></p>
+<p><img src="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/SwaggerWithJWT.png" alt="SwaggerWithJWT"></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Dev</category>
+        <category>.Net Core</category>
+        <category>ASP.NET Core</category>
+      </categories>
+      <tags>
+        <tag>JWT</tag>
+        <tag>ASP.NET Core</tag>
+        <tag>.Net Core</tag>
+        <tag>文档</tag>
+        <tag>Swagger</tag>
+        <tag>版本控制</tag>
       </tags>
   </entry>
   <entry>
@@ -375,26 +375,26 @@
 <span id="more"></span>
 
 <h2 id="5种Filter"><a href="#5种Filter" class="headerlink" title="5种Filter"></a>5种Filter</h2><h3 id="简单概括"><a href="#简单概括" class="headerlink" title="简单概括"></a>简单概括</h3><ul>
-<li><p><strong>[Authorizaion Filter](#Authorizaion Filter)</strong> ：<strong>授权过滤器</strong></p>
+<li><p><strong><a href="#Authorizaion-Filter">Authorizaion Filter</a></strong> ：<strong>授权过滤器</strong></p>
 <p>Authorization是五种Filter中最先运行的，用于确定是否已针对请求为用户授权。 如果请求未获授权，可以让管道短路。</p>
 <p><strong>作用</strong>：主要用于实现复杂的<code>权限角色认证</code>、<code>登陆授权</code>等操作。</p>
 </li>
-<li><p><strong>[Resource Filter](#Resource Filter)</strong> ：<strong>资源过滤器</strong></p>
+<li><p><strong><a href="#Resource-Filter">Resource Filter</a></strong> ：<strong>资源过滤器</strong></p>
 <p>OnResourceExecuting：在Authorization之后，Model Binding之前执行，对<strong>实现缓存或者对过滤管道进行短路</strong>特别有用。</p>
 <p>OnResourceExecuted：在管道的其余阶段完成之后运行代码。</p>
 <p><strong>作用</strong>：主要用于进行<code>资源缓存</code>、<code>防盗链</code>等操作。</p>
 </li>
-<li><p><strong>[Exception Filter](#Exception Filter)</strong> ：<strong>异常过滤器</strong></p>
+<li><p><strong><a href="#Exception-Filter">Exception Filter</a></strong> ：<strong>异常过滤器</strong></p>
 <p>异常处理的Filter，在向响应正文写入任何内容之前，对未经处理的异常应用全局策略。</p>
 <p><strong>作用</strong>：可以进行全局的<code>异常日志收集</code>、<code>错误信息友好化处理</code>等操作。</p>
 </li>
-<li><p><strong>[Action Filter](#Action Filter)</strong> ：<strong>操作过滤器</strong></p>
+<li><p><strong><a href="#Action-Filter">Action Filter</a></strong> ：<strong>操作过滤器</strong></p>
 <p>最常使用的Filter，实际上包围了整个Action。</p>
 <p>OnActionExecuting：执行实际Action操作前触发，更改传递到操作中的参数。</p>
 <p>OnActionExecuted：执行实际Action操作后触发，更改从操作返回的结果。</p>
 <p><strong>作用</strong>：做法太多了，可以用于<code>执行操作日志</code>、<code>参数验证</code>，<code>权限控制</code>等一系列操作。</p>
 </li>
-<li><p><strong>[Result Filter](#Result Filter)</strong> ：<strong>结果过滤器</strong></p>
+<li><p><strong><a href="#Result-Filter">Result Filter</a></strong> ：<strong>结果过滤器</strong></p>
 <p>在执行操作结果之前和之后立即运行代码。<strong>仅当操作方法成功执行时，它们才会运行</strong>。对于必须围绕视图或格式化程序的执行的逻辑，它们很有用。</p>
 <p>OnResultExecuting：在操作结果执行之前调用。</p>
 <p>OnResultExecuted：在操作结果执行之后调用。</p>
@@ -518,6 +518,65 @@
         <tag>.Net Core</tag>
         <tag>Filter</tag>
         <tag>过滤器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用NVM管理node.js版本</title>
+    <url>/2022/01/+%E4%BD%BF%E7%94%A8NVM%E7%AE%A1%E7%90%86node.js%E7%89%88%E6%9C%AC/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是NVM"><a href="#什么是NVM" class="headerlink" title="什么是NVM"></a>什么是NVM</h2><p>全名<strong>node.js version management</strong>，是一个<strong>node.js的版本管理工具</strong>。通过它可以安装和切换不同版本的 nodejs。</p>
+<p>其主要解决不同项目所需node.js版本不一致时管理的麻烦，就比如我弄hexo主题，不同的主题需要的nodejs版本不一致，没有这来管理，我得不停安装卸载nodejs来测试，还要修改环境变量等，十分麻烦，使用这工具就能很轻松管理。</p>
+<h2 id="使用步骤"><a href="#使用步骤" class="headerlink" title="使用步骤"></a>使用步骤</h2><h3 id="第一步：卸载你的NodeJs"><a href="#第一步：卸载你的NodeJs" class="headerlink" title="第一步：卸载你的NodeJs"></a>第一步：卸载你的NodeJs</h3><p>将电脑现在装的node进行卸载，最好是删除所有关于node的文件及内容</p>
+<h3 id="第二步：安装NVM"><a href="#第二步：安装NVM" class="headerlink" title="第二步：安装NVM"></a>第二步：安装NVM</h3><p>通过Github服务器<a href="https://github.com/coreybutler/nvm-windows/releases">下载安装</a></p>
+<p>下载完成后，按照安装操作一步一步安装就好了，很简单。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvm-noinstall.zip： 这个是绿色免安装版本，但是使用之前需要配置</span><br><span class="line">nvm-setup.zip：这是一个安装包，下载之后点击安装，无需配置就可以使用，方便。</span><br><span class="line">Source code(zip)：zip压缩的源码</span><br><span class="line">Sourc code(tar.gz)：tar.gz的源码，一般用于Linux系统</span><br></pre></td></tr></table></figure>
+
+<p>建议下载nvm-setup.zip版本，配置我怕你不会弄弄乱了也不懂改。</p>
+<p>打开zip文件，运行exe文件安装，我建议把nvm与node相关都统合在一起，以后好管理，我统一都在<code>C:\Env</code>下，NVM安装地址就填<code>C:\Env\NVM</code>，nodejs安装地址就填<code>C:\Env\nodejs</code>，安装完后你会看到<code>C:\Env</code>目录下有NVM文件夹，但是没有nodejs文件夹，这是因为前面的nodejs地址填的是以后nodejs的访问地址，现在还没有安装并使用nodejs自然就没有。</p>
+<h3 id="第三步：测试nvm是否安装成功"><a href="#第三步：测试nvm是否安装成功" class="headerlink" title="第三步：测试nvm是否安装成功"></a>第三步：测试nvm是否安装成功</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvm -v</span><br><span class="line">//version 1.1.6  出现版本号，说明安装成功，接下来就可以进行下面的操作</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四步：安装并控制node版本"><a href="#第四步：安装并控制node版本" class="headerlink" title="第四步：安装并控制node版本"></a>第四步：安装并控制node版本</h3><p>前面完成后，接下来就可以安装并随意切换我们的node版本号了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvm list available  // 首先可以通过命令来查询我们可以安装的node版本</span><br><span class="line">nvm install 10.5.0  // 安装指定的版本的nodejs</span><br><span class="line">nvm <span class="built_in">ls</span>   // 查看目前已经安装的版本</span><br><span class="line">nvm use 10.5.0  // 使用指定版本的nodejs，需要权限较高，windows下需要管理员权限</span><br></pre></td></tr></table></figure>
+
+<p>可以通过<code>nvm install</code>命令安装多个版本的nodejs，然后通过<code>nvm use</code>命令来切换要是用的版本号。</p>
+<p>通过切换版本号后，可以通过<code>node -v</code>命令来检测是否使用成功。</p>
+<h4 id="镜像加速"><a href="#镜像加速" class="headerlink" title="镜像加速"></a>镜像加速</h4><p>由于国外的镜像源下载慢，可以使用命令更改为Taobao的源。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvm node_mirror https://npm.taobao.org/mirrors/node/</span><br><span class="line">nvm npm_mirror https://npm.taobao.org/mirrors/npm/</span><br></pre></td></tr></table></figure>
+
+<h2 id="NVM常用命令"><a href="#NVM常用命令" class="headerlink" title="NVM常用命令"></a>NVM常用命令</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvm off                     // 禁用node.js版本管理(不卸载任何东西)</span><br><span class="line">nvm on                      // 启用node.js版本管理</span><br><span class="line">nvm install &lt;version&gt;       // 安装node.js的命名 version是版本号 例如：nvm install 8.12.0</span><br><span class="line">nvm uninstall &lt;version&gt;     // 卸载node.js是的命令，卸载指定版本的nodejs，当安装失败时卸载使用</span><br><span class="line">nvm <span class="built_in">ls</span>                      // 显示所有已安装的node.js版本</span><br><span class="line">nvm list available          // 显示可以安装的所有node.js的版本</span><br><span class="line">nvm use &lt;version&gt;           // 切换到使用指定的nodejs版本</span><br><span class="line">nvm v                       // 显示nvm版本</span><br><span class="line">nvm install stable          // 安装最新稳定版</span><br></pre></td></tr></table></figure>
+
+<h2 id="可能遇到问题解决"><a href="#可能遇到问题解决" class="headerlink" title="可能遇到问题解决"></a>可能遇到问题解决</h2><ul>
+<li><p>windows 上安装 nvm 后选择 node 版本出现 exit status 1…</p>
+<p>问题：nvm install x.x.x 可以安装成功，但无法切换和使用，报错 exit status 1</p>
+<p>原因1：把 nvm 安装到了有空格的路径上（D:\Program Files），导致切换失败</p>
+<p>解决1：把 nvm 卸载重装到没有空格的路径上（例如：D:\nvm），即可解决问题</p>
+<p>原因2：Cmd命令权限不足</p>
+<p>解决2：使用 <strong>以管理员身份运行</strong> 运行<code>Cmd</code>程序，然后再运行<code>nvm</code>命令</p>
+</li>
+<li><p>nvm 在 CMD 中不生效</p>
+<p>报错：nvm : 无法将 nvm 项识别为 cmdlet、函数、脚本文件或可运行程序的名称。</p>
+<p>意思就是<code>nvm</code>还不是个命令，说明没有配置成功。</p>
+<p>原因：当环境变量没配正确时（使用免安装版时需要配置环境变量），重启也不会生效。在确保环境变量配置正确后，重启<code>cmd</code>控制台后会生效。</p>
+</li>
+<li><p>npm Download failed</p>
+<p>有时候安装 node 安装成功之后，会去安装 npm 有时候就会报错 npm 拒绝啥的，具体报错没有记录</p>
+<p>解决：使用镜像加速（把镜像加速的那2行加入，重新开 cmd 安装即可）</p>
+</li>
+<li><p>node 版本安装成功，但是使用时还是之前的版本</p>
+<p>如之前安装过node版本 10.15.0，没有卸载，直接安装的 nvm，并用 nvm 安装了 14.18.1 的 node。如下切换成 14.18.1 版本也正常，但是查看 node -v 却还是之前的版本。</p>
+<p>解决：<strong>在安装 NVM for Windows 之前，您需要卸载任何现有版本的 node.js，还需要删除任何现有nodejs安装目录</strong>。</p>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.cnblogs.com/goloving/p/15401739.html">浅析nvm介绍、安装与使用以及遇到的问题解决</a></p>
+]]></content>
+      <categories>
+        <category>Dev</category>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>NVM</tag>
+        <tag>npm</tag>
+        <tag>nodejs</tag>
+        <tag>版本管理</tag>
       </tags>
   </entry>
   <entry>

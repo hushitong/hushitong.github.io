@@ -129,17 +129,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">21</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -263,26 +263,26 @@
 <span id="more"></span>
 
 <h2 id="5种Filter"><a href="#5种Filter" class="headerlink" title="5种Filter"></a>5种Filter</h2><h3 id="简单概括"><a href="#简单概括" class="headerlink" title="简单概括"></a>简单概括</h3><ul>
-<li><p><strong>[Authorizaion Filter](#Authorizaion Filter)</strong> ：<strong>授权过滤器</strong></p>
+<li><p><strong><a href="#Authorizaion-Filter">Authorizaion Filter</a></strong> ：<strong>授权过滤器</strong></p>
 <p>Authorization是五种Filter中最先运行的，用于确定是否已针对请求为用户授权。 如果请求未获授权，可以让管道短路。</p>
 <p><strong>作用</strong>：主要用于实现复杂的<code>权限角色认证</code>、<code>登陆授权</code>等操作。</p>
 </li>
-<li><p><strong>[Resource Filter](#Resource Filter)</strong> ：<strong>资源过滤器</strong></p>
+<li><p><strong><a href="#Resource-Filter">Resource Filter</a></strong> ：<strong>资源过滤器</strong></p>
 <p>OnResourceExecuting：在Authorization之后，Model Binding之前执行，对<strong>实现缓存或者对过滤管道进行短路</strong>特别有用。</p>
 <p>OnResourceExecuted：在管道的其余阶段完成之后运行代码。</p>
 <p><strong>作用</strong>：主要用于进行<code>资源缓存</code>、<code>防盗链</code>等操作。</p>
 </li>
-<li><p><strong>[Exception Filter](#Exception Filter)</strong> ：<strong>异常过滤器</strong></p>
+<li><p><strong><a href="#Exception-Filter">Exception Filter</a></strong> ：<strong>异常过滤器</strong></p>
 <p>异常处理的Filter，在向响应正文写入任何内容之前，对未经处理的异常应用全局策略。</p>
 <p><strong>作用</strong>：可以进行全局的<code>异常日志收集</code>、<code>错误信息友好化处理</code>等操作。</p>
 </li>
-<li><p><strong>[Action Filter](#Action Filter)</strong> ：<strong>操作过滤器</strong></p>
+<li><p><strong><a href="#Action-Filter">Action Filter</a></strong> ：<strong>操作过滤器</strong></p>
 <p>最常使用的Filter，实际上包围了整个Action。</p>
 <p>OnActionExecuting：执行实际Action操作前触发，更改传递到操作中的参数。</p>
 <p>OnActionExecuted：执行实际Action操作后触发，更改从操作返回的结果。</p>
 <p><strong>作用</strong>：做法太多了，可以用于<code>执行操作日志</code>、<code>参数验证</code>，<code>权限控制</code>等一系列操作。</p>
 </li>
-<li><p><strong>[Result Filter](#Result Filter)</strong> ：<strong>结果过滤器</strong></p>
+<li><p><strong><a href="#Result-Filter">Result Filter</a></strong> ：<strong>结果过滤器</strong></p>
 <p>在执行操作结果之前和之后立即运行代码。<strong>仅当操作方法成功执行时，它们才会运行</strong>。对于必须围绕视图或格式化程序的执行的逻辑，它们很有用。</p>
 <p>OnResultExecuting：在操作结果执行之前调用。</p>
 <p>OnResultExecuted：在操作结果执行之后调用。</p>
@@ -495,20 +495,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -552,12 +552,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">48k</span>
+    <span title="站点总字数">50k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">44 分钟</span>
+    <span title="站点阅读时长">46 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
