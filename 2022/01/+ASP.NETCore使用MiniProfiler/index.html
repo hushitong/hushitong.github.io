@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="什么是 MiniProfilerMiniProfiler 是一款针对 .NET、Ruby、Go 与 Node.js 的性能分析的轻量级程序。可以对一个页面本身，及该页面通过 直接引用、Ajax、Iframe 形式访问的其它页面进行监控，监控内容包括数据库内容，并可以显示数据库访问的 SQL（支持 EF、EF Core 等 ）。并且以很友好的方式展现在页面上。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ASP.NETCore使用Swagger">
+<meta property="og:url" content="http://hushitong.github.io/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8MiniProfiler/index.html">
+<meta property="og:site_name" content="Singo&#39;Sky">
+<meta property="og:description" content="什么是 MiniProfilerMiniProfiler 是一款针对 .NET、Ruby、Go 与 Node.js 的性能分析的轻量级程序。可以对一个页面本身，及该页面通过 直接引用、Ajax、Iframe 形式访问的其它页面进行监控，监控内容包括数据库内容，并可以显示数据库访问的 SQL（支持 EF、EF Core 等 ）。并且以很友好的方式展现在页面上。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-24T16:00:00.000Z">
+<meta property="article:author" content="Singo">
+<meta property="article:tag" content="ASP.NET Core">
+<meta property="article:tag" content=".NET Core">
+<meta property="article:tag" content="Swagger">
+<meta property="article:tag" content="MiniProfiler">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hushitong.github.io/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8MiniProfiler/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ASP.NETCore使用Swagger | Singo'Sky</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Singo'Sky</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hushitong.github.io/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8MiniProfiler/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Singo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Singo'Sky">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ASP.NETCore使用Swagger
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-25 00:00:00" itemprop="dateCreated datePublished" datetime="2022-01-25T00:00:00+08:00">2022-01-25</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是-MiniProfiler"><a href="#什么是-MiniProfiler" class="headerlink" title="什么是 MiniProfiler"></a>什么是 MiniProfiler</h2><p><a target="_blank" rel="noopener" href="https://miniprofiler.com/">MiniProfiler</a> 是一款针对 .NET、Ruby、Go 与 Node.js 的性能分析的轻量级程序。可以对一个页面本身，及该页面通过 <strong>直接引用、Ajax、Iframe</strong> 形式访问的其它页面进行监控，监控内容包括数据库内容，并可以显示数据库访问的 SQL（支持 EF、EF Core 等 ）。并且以很友好的方式展现在页面上。</p>
+<span id="more"></span>
+
+<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ol>
+<li><p>nuget 安装对应包</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Install-Package</span> MiniProfiler.AspNetCore.Mvc</span><br></pre></td></tr></table></figure></li>
+<li><p>到 <code>Startup.ConfigureServices</code> 中注册</p>
+   <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//注册MiniProfiler</span></span><br><span class="line">services.AddMiniProfiler(options =&gt;</span><br><span class="line">  <span class="comment">//配置MiniProfiler的路由基础路径，按照当前配置，你可以使用&quot;/profiler/results&quot;来访问分析报告</span></span><br><span class="line">  options.RouteBasePath = <span class="string">&quot;/profiler&quot;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+<li><p>在 <code>Startup.Configure</code> 方法中，启用 MiniProfiler 服务</p>
+   <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//启用MiniProfiler服务</span></span><br><span class="line">app.UseMiniProfiler();</span><br></pre></td></tr></table></figure></li>
+<li><p>此时启动项目，随意测试请求 Api，然后我们就能通过 “/profiler/results” 地址访问到 MiniProfiler 提供的分析报告页面，可以看到类似表格</p>
+<table>
+<thead>
+<tr>
+<th align="left">duration (ms)</th>
+<th align="right">with children (ms)</th>
+<th align="right">from start (ms)</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://localhost:5000/WeatherForecast">http://localhost:5000/WeatherForecast</a></td>
+<td align="right">48.1</td>
+<td align="right">72.4</td>
+<td>+0.6</td>
+</tr>
+<tr>
+<td align="left">MiniProfiler Init</td>
+<td align="right">2.8</td>
+<td align="right">7.9</td>
+<td>+3.7</td>
+</tr>
+<tr>
+<td align="left">Authorize</td>
+<td align="right">1.1</td>
+<td align="right">1.1</td>
+<td>+5.0</td>
+</tr>
+<tr>
+<td align="left">Get Profiler IDs</td>
+<td align="right">3.3</td>
+<td align="right">3.3</td>
+<td>+7.1</td>
+</tr>
+<tr>
+<td align="left">Set Headers</td>
+<td align="right">0.7</td>
+<td align="right">0.7</td>
+<td>+10.5</td>
+</tr>
+<tr>
+<td align="left">Action: UseMiniProfiler.Controllers.WeatherForecastController.Get</td>
+<td align="right">4.6</td>
+<td align="right">16.4</td>
+<td>+52.7</td>
+</tr>
+<tr>
+<td align="left">Action Filter (Execing): UnsupportedContentTypeFilter</td>
+<td align="right">0.7</td>
+<td align="right">0.7</td>
+<td>+54.6</td>
+</tr>
+<tr>
+<td align="left">Action Filter (Execing): ModelStateInvalidFilter</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td>+55.4</td>
+</tr>
+<tr>
+<td align="left">Controller Action: UseMiniProfiler.Controllers.WeatherForecastController.Get</td>
+<td align="right">2.4</td>
+<td align="right">2.4</td>
+<td>+55.9</td>
+</tr>
+<tr>
+<td align="left">Action Filter (Execed): ModelStateInvalidFilter</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td>+58.4</td>
+</tr>
+<tr>
+<td align="left">Action Filter (Execed): UnsupportedContentTypeFilter</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td>+58.5</td>
+</tr>
+<tr>
+<td align="left">Result Filter (Execing): ClientErrorResultFilter</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td>+58.8</td>
+</tr>
+<tr>
+<td align="left">Object: IEnumerable`1</td>
+<td align="right">8.7</td>
+<td align="right">8.7</td>
+<td>+60.1</td>
+</tr>
+<tr>
+<td align="left">Result Filter (Execed): ClientErrorResultFilter</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td>+68.9</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>更加具体的使用可以参考官方文档：<a target="_blank" rel="noopener" href="https://miniprofiler.com/dotnet/">https://miniprofiler.com/dotnet/</a></p>
+</li>
+</ol>
+<h3 id="AddMiniProfiler的一些选项说明"><a href="#AddMiniProfiler的一些选项说明" class="headerlink" title="AddMiniProfiler的一些选项说明"></a>AddMiniProfiler的一些选项说明</h3><p>来源：<a target="_blank" rel="noopener" href="https://miniprofiler.com/dotnet/AspDotNetCore">https://miniprofiler.com/dotnet/AspDotNetCore</a></p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...existing configuration...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Note .AddMiniProfiler() returns a IMiniProfilerBuilder for easy intellisense</span></span><br><span class="line">    services.AddMiniProfiler(options =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// All of this is optional. You can simply call .AddMiniProfiler() for all defaults</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) Path to use for profiler URLs, default is /mini-profiler-resources</span></span><br><span class="line">        options.RouteBasePath = <span class="string">&quot;/profiler&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) Control storage</span></span><br><span class="line">        <span class="comment">// (default is 30 minutes in MemoryCacheStorage)</span></span><br><span class="line">        <span class="comment">// Note: MiniProfiler will not work if a SizeLimit is set on MemoryCache!</span></span><br><span class="line">        <span class="comment">//   See: https://github.com/MiniProfiler/dotnet/issues/501 for details</span></span><br><span class="line">        (options.Storage <span class="keyword">as</span> MemoryCacheStorage).CacheDuration = TimeSpan.FromMinutes(<span class="number">60</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) Control which SQL formatter to use, InlineFormatter is the default</span></span><br><span class="line">        options.SqlFormatter = <span class="keyword">new</span> StackExchange.Profiling.SqlFormatters.InlineFormatter();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) To control authorization, you can use the Func&lt;HttpRequest, bool&gt; options:</span></span><br><span class="line">        <span class="comment">// (default is everyone can access profilers)</span></span><br><span class="line">        options.ResultsAuthorize = request =&gt; MyGetUserFunction(request).CanSeeMiniProfiler;</span><br><span class="line">        options.ResultsListAuthorize = request =&gt; MyGetUserFunction(request).CanSeeMiniProfiler;</span><br><span class="line">        <span class="comment">// Or, there are async versions available:</span></span><br><span class="line">        options.ResultsAuthorizeAsync = <span class="keyword">async</span> request =&gt; (<span class="keyword">await</span> MyGetUserFunctionAsync(request)).CanSeeMiniProfiler;</span><br><span class="line">        options.ResultsAuthorizeListAsync = <span class="keyword">async</span> request =&gt; (<span class="keyword">await</span> MyGetUserFunctionAsync(request)).CanSeeMiniProfilerLists;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional)  To control which requests are profiled, use the Func&lt;HttpRequest, bool&gt; option:</span></span><br><span class="line">        <span class="comment">// (default is everything should be profiled)</span></span><br><span class="line">        options.ShouldProfile = request =&gt; MyShouldThisBeProfiledFunction(request);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) Profiles are stored under a user ID, function to get it:</span></span><br><span class="line">        <span class="comment">// (default is null, since above methods don&#x27;t use it by default)</span></span><br><span class="line">        options.UserIdProvider =  request =&gt; MyGetUserIdFunction(request);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) Swap out the entire profiler provider, if you want</span></span><br><span class="line">        <span class="comment">// (default handles async and works fine for almost all applications)</span></span><br><span class="line">        options.ProfilerProvider = <span class="keyword">new</span> MyProfilerProvider();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) You can disable &quot;Connection Open()&quot;, &quot;Connection Close()&quot; (and async variant) tracking.</span></span><br><span class="line">        <span class="comment">// (defaults to true, and connection opening/closing is tracked)</span></span><br><span class="line">        options.TrackConnectionOpenClose = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) Use something other than the &quot;light&quot; color scheme.</span></span><br><span class="line">        <span class="comment">// (defaults to &quot;light&quot;)</span></span><br><span class="line">        options.ColorScheme = StackExchange.Profiling.ColorScheme.Auto;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Optionally change the number of decimal places shown for millisecond timings.</span></span><br><span class="line">        <span class="comment">// (defaults to 2)</span></span><br><span class="line">        options.PopupDecimalPlaces = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The below are newer options, available in .NET Core 3.0 and above:</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) You can disable MVC filter profiling</span></span><br><span class="line">        <span class="comment">// (defaults to true, and filters are profiled)</span></span><br><span class="line">        options.EnableMvcFilterProfiling = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// ...or only save filters that take over a certain millisecond duration (including their children)</span></span><br><span class="line">        <span class="comment">// (defaults to null, and all filters are profiled)</span></span><br><span class="line">        <span class="comment">// options.MvcFilterMinimumSaveMs = 1.0m;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional) You can disable MVC view profiling</span></span><br><span class="line">        <span class="comment">// (defaults to true, and views are profiled)</span></span><br><span class="line">        options.EnableMvcViewProfiling = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// ...or only save views that take over a certain millisecond duration (including their children)</span></span><br><span class="line">        <span class="comment">// (defaults to null, and all views are profiled)</span></span><br><span class="line">        <span class="comment">// options.MvcViewMinimumSaveMs = 1.0m;</span></span><br><span class="line">     </span><br><span class="line">        <span class="comment">// (Optional) listen to any errors that occur within MiniProfiler itself</span></span><br><span class="line">        <span class="comment">// options.OnInternalError = e =&gt; MyExceptionLogger(e);</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// (Optional - not recommended) You can enable a heavy debug mode with stacks and tooltips when using memory storage</span></span><br><span class="line">        <span class="comment">// It has a lot of overhead vs. normal profiling and should only be used with that in mind</span></span><br><span class="line">        <span class="comment">// (defaults to false, debug/heavy mode is off)</span></span><br><span class="line">        <span class="comment">//options.EnableDebugMode = true;</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="结合Swagger"><a href="#结合Swagger" class="headerlink" title="结合Swagger"></a>结合Swagger</h2><p>   如何添加 Swagger 支持这里就不说了，默认已经弄好。</p>
+<h3 id="步骤-1"><a href="#步骤-1" class="headerlink" title="步骤"></a>步骤</h3><ol>
+<li><p>创建 index.html 放在项目根目录，该文件会作为 Swagger 自定义首页，并在 VS 里右键该文件设置为 <strong>”嵌入的资源“</strong>。</p>
+<p>html 内容如下，这个无效的话可以再去官方 github 项目文件里找找，我网上找了几个都有问题</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- HTML for static distribution bundle build --&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>%(DocumentTitle)<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span> <span class="attr">href</span>=<span class="string">&quot;./swagger-ui.css&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;icon&quot;</span> <span class="attr">type</span>=<span class="string">&quot;image/png&quot;</span> <span class="attr">href</span>=<span class="string">&quot;./favicon-32x32.png&quot;</span> <span class="attr">sizes</span>=<span class="string">&quot;32x32&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;icon&quot;</span> <span class="attr">type</span>=<span class="string">&quot;image/png&quot;</span> <span class="attr">href</span>=<span class="string">&quot;./favicon-16x16.png&quot;</span> <span class="attr">sizes</span>=<span class="string">&quot;16x16&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">        <span class="selector-tag">html</span> &#123;</span></span><br><span class="line"><span class="language-css">            <span class="attribute">box-sizing</span>: border-box;</span></span><br><span class="line"><span class="language-css">            <span class="attribute">overflow</span>: -moz-scrollbars-vertical;</span></span><br><span class="line"><span class="language-css">            <span class="attribute">overflow-y</span>: scroll;</span></span><br><span class="line"><span class="language-css">        &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">        *,</span></span><br><span class="line"><span class="language-css">        *<span class="selector-pseudo">:before</span>,</span></span><br><span class="line"><span class="language-css">        *<span class="selector-pseudo">:after</span> &#123;</span></span><br><span class="line"><span class="language-css">            <span class="attribute">box-sizing</span>: inherit;</span></span><br><span class="line"><span class="language-css">        &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">        <span class="selector-tag">body</span> &#123;</span></span><br><span class="line"><span class="language-css">            <span class="attribute">margin</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">            <span class="attribute">background</span>: <span class="number">#fafafa</span>;</span></span><br><span class="line"><span class="language-css">        &#125;</span></span><br><span class="line"><span class="language-css">    </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line">    %(HeadContent)</span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;swagger-ui&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Workaround for https://github.com/swagger-api/swagger-editor/issues/1371 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">if</span> (<span class="variable language_">window</span>.<span class="property">navigator</span>.<span class="property">userAgent</span>.<span class="title function_">indexOf</span>(<span class="string">&quot;Edge&quot;</span>) &gt; -<span class="number">1</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Removing native Edge fetch in favor of swagger-ui&#x27;s polyfill&quot;</span>)</span></span><br><span class="line"><span class="language-javascript">            <span class="variable language_">window</span>.<span class="property">fetch</span> = <span class="literal">undefined</span>;</span></span><br><span class="line"><span class="language-javascript">        &#125;</span></span><br><span class="line"><span class="language-javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./swagger-ui-bundle.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./swagger-ui-standalone-preset.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="comment">/* Source: https://gist.github.com/lamberta/3768814</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         * Parse a string function definition and return a function object. Does not use eval.</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         * @param &#123;string&#125; str</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         * @return &#123;function&#125;</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         *</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         * Example:</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         *  var f = function (x, y) &#123; return x * y; &#125;;</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         *  var g = parseFunction(f.toString());</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         *  g(33, 3); //=&gt; 99</span></span></span><br><span class="line"><span class="comment"><span class="language-javascript">         */</span></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">function</span> <span class="title function_">parseFunction</span>(<span class="params">str</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (!str) <span class="keyword">return</span> <span class="keyword">void</span> (<span class="number">0</span>);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> fn_body_idx = str.<span class="title function_">indexOf</span>(<span class="string">&#x27;&#123;&#x27;</span>),</span></span><br><span class="line"><span class="language-javascript">                fn_body = str.<span class="title function_">substring</span>(fn_body_idx + <span class="number">1</span>, str.<span class="title function_">lastIndexOf</span>(<span class="string">&#x27;&#125;&#x27;</span>)),</span></span><br><span class="line"><span class="language-javascript">                fn_declare = str.<span class="title function_">substring</span>(<span class="number">0</span>, fn_body_idx),</span></span><br><span class="line"><span class="language-javascript">                fn_params = fn_declare.<span class="title function_">substring</span>(fn_declare.<span class="title function_">indexOf</span>(<span class="string">&#x27;(&#x27;</span>) + <span class="number">1</span>, fn_declare.<span class="title function_">lastIndexOf</span>(<span class="string">&#x27;)&#x27;</span>)),</span></span><br><span class="line"><span class="language-javascript">                args = fn_params.<span class="title function_">split</span>(<span class="string">&#x27;,&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            args.<span class="title function_">push</span>(fn_body);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">function</span> <span class="title function_">Fn</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">return</span> <span class="title class_">Function</span>.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args);</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">            <span class="title class_">Fn</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="title class_">Function</span>.<span class="property"><span class="keyword">prototype</span></span>;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Fn</span>();</span></span><br><span class="line"><span class="language-javascript">        &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="variable language_">window</span>.<span class="property">onload</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> configObject = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="string">&#x27;%(ConfigObject)&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> oauthConfigObject = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="string">&#x27;%(OAuthConfigObject)&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="comment">// Workaround for https://github.com/swagger-api/swagger-ui/issues/5945</span></span></span><br><span class="line"><span class="language-javascript">            configObject.<span class="property">urls</span>.<span class="title function_">forEach</span>(<span class="keyword">function</span> (<span class="params">item</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">if</span> (item.<span class="property">url</span>.<span class="title function_">startsWith</span>(<span class="string">&quot;http&quot;</span>) || item.<span class="property">url</span>.<span class="title function_">startsWith</span>(<span class="string">&quot;/&quot;</span>)) <span class="keyword">return</span>;</span></span><br><span class="line"><span class="language-javascript">                item.<span class="property">url</span> = <span class="variable language_">window</span>.<span class="property">location</span>.<span class="property">href</span>.<span class="title function_">replace</span>(<span class="string">&quot;index.html&quot;</span>, item.<span class="property">url</span>).<span class="title function_">split</span>(<span class="string">&#x27;#&#x27;</span>)[<span class="number">0</span>];</span></span><br><span class="line"><span class="language-javascript">            &#125;);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="comment">// If validatorUrl is not explicitly provided, disable the feature by setting to null</span></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (!configObject.<span class="title function_">hasOwnProperty</span>(<span class="string">&quot;validatorUrl&quot;</span>))</span></span><br><span class="line"><span class="language-javascript">                configObject.<span class="property">validatorUrl</span> = <span class="literal">null</span></span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="comment">// If oauth2RedirectUrl isn&#x27;t specified, use the built-in default</span></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (!configObject.<span class="title function_">hasOwnProperty</span>(<span class="string">&quot;oauth2RedirectUrl&quot;</span>))</span></span><br><span class="line"><span class="language-javascript">                configObject.<span class="property">oauth2RedirectUrl</span> = (<span class="keyword">new</span> <span class="title function_">URL</span>(<span class="string">&quot;oauth2-redirect.html&quot;</span>, <span class="variable language_">window</span>.<span class="property">location</span>.<span class="property">href</span>)).<span class="property">href</span>;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="comment">// Apply mandatory parameters</span></span></span><br><span class="line"><span class="language-javascript">            configObject.<span class="property">dom_id</span> = <span class="string">&quot;#swagger-ui&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            configObject.<span class="property">presets</span> = [<span class="title class_">SwaggerUIBundle</span>.<span class="property">presets</span>.<span class="property">apis</span>, <span class="title class_">SwaggerUIStandalonePreset</span>];</span></span><br><span class="line"><span class="language-javascript">            configObject.<span class="property">layout</span> = <span class="string">&quot;StandaloneLayout&quot;</span>;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="comment">// Parse and add interceptor functions</span></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> interceptors = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="string">&#x27;%(Interceptors)&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (interceptors.<span class="property">RequestInterceptorFunction</span>)</span></span><br><span class="line"><span class="language-javascript">                configObject.<span class="property">requestInterceptor</span> = <span class="title function_">parseFunction</span>(interceptors.<span class="property">RequestInterceptorFunction</span>);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (interceptors.<span class="property">ResponseInterceptorFunction</span>)</span></span><br><span class="line"><span class="language-javascript">                configObject.<span class="property">responseInterceptor</span> = <span class="title function_">parseFunction</span>(interceptors.<span class="property">ResponseInterceptorFunction</span>);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="comment">// Begin Swagger UI call region</span></span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">const</span> ui = <span class="title class_">SwaggerUIBundle</span>(configObject);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            ui.<span class="title function_">initOAuth</span>(oauthConfigObject);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="comment">// End Swagger UI call region</span></span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="variable language_">window</span>.<span class="property">ui</span> = ui</span></span><br><span class="line"><span class="language-javascript">        &#125;</span></span><br><span class="line"><span class="language-javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>修改<code>Startup.Configure</code>的 UseSwaggerUI 中间件的配置</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//启用中间件服务对swagger-ui，指定Swagger JSON终结点</span></span><br><span class="line">app.UseSwaggerUI(c =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    c.SwaggerEndpoint(<span class="string">&quot;/swagger/v1/swagger.json&quot;</span>, <span class="string">&quot;My API V1&quot;</span>);</span><br><span class="line">    c.RoutePrefix = <span class="built_in">string</span>.Empty;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//新增下面</span></span><br><span class="line">    c.IndexStream = () =&gt; GetType().GetTypeInfo()</span><br><span class="line">      .Assembly.GetManifestResourceStream(<span class="string">&quot;&lt;your-project-namespace&gt;.index.html&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>&lt;your-project-namespace&gt;</code>需改为自己的</p>
+<p>假如<code>&lt;your-project-namespace&gt;</code>这里填错了，会报下面错误</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ArgumentNullException: Value cannot be <span class="literal">null</span>. (Parameter <span class="string">&#x27;stream&#x27;</span>)</span><br><span class="line">        System.IO.StreamReader..ctor(Stream stream, Encoding encoding, <span class="built_in">bool</span> detectEncodingFromByteOrderMarks, <span class="built_in">int</span> bufferSize, <span class="built_in">bool</span> leaveOpen)</span><br><span class="line">        Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.RespondWithIndexHtml(HttpResponse response)</span><br><span class="line">        Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)</span><br><span class="line">        Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)</span><br><span class="line">        Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)</span><br></pre></td></tr></table></figure>
+
+<p>所以我后来改了写法</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获得当前程序集的名字</span></span><br><span class="line"><span class="built_in">string</span> projectName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name; </span><br><span class="line">c.IndexStream = () =&gt; GetType().GetTypeInfo().Assembly.GetManifestResourceStream(<span class="string">$&quot;<span class="subst">&#123;projectName&#125;</span>.index.html&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这样改了项目名就可以动态获得，当然还是有其他问题，不过一般也够用了</p>
+</li>
+<li><p><strong>获取MiniProfiler相关Script片段</strong>，这个很重要，网上很多教程就直接给一个&lt;script&gt;代码给人使用，但是版本不匹配的话会出问题</p>
+<p>在其中一个Controller里添加该方法</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">HttpGet(<span class="string">&quot;GetMiniProfilerScript&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">GetMiniProfilerScript</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> html = MiniProfiler.Current.RenderIncludes(HttpContext);</span><br><span class="line">    <span class="keyword">return</span> Ok(html.Value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后运行项目访问该方法，获得其内容，类似下面，实际就是一段&lt;script&gt;</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">async</span>=<span class="string">&quot;async&quot;</span> <span class="attr">id</span>=<span class="string">&quot;mini-profiler&quot;</span> <span class="attr">src</span>=<span class="string">&quot;/profiler/includes.min.js?v=4.2.22+4563a9e1ab&quot;</span> <span class="attr">data-version</span>=<span class="string">&quot;4.2.22+4563a9e1ab&quot;</span> <span class="attr">data-path</span>=<span class="string">&quot;/profiler/&quot;</span> <span class="attr">data-current-id</span>=<span class="string">&quot;82827eb7-0fbf-46ac-a21b-d8547627b53b&quot;</span> <span class="attr">data-ids</span>=<span class="string">&quot;9871c780-0c60-4b17-a5ba-0b4b848c6ef9,82827eb7-0fbf-46ac-a21b-d8547627b53b&quot;</span> <span class="attr">data-position</span>=<span class="string">&quot;Left&quot;</span>&quot; <span class="attr">data-scheme</span>=<span class="string">&quot;Light&quot;</span> <span class="attr">data-authorized</span>=<span class="string">&quot;true&quot;</span> <span class="attr">data-max-traces</span>=<span class="string">&quot;15&quot;</span> <span class="attr">data-toggle-shortcut</span>=<span class="string">&quot;Alt+P&quot;</span> <span class="attr">data-trivial-milliseconds</span>=<span class="string">&quot;2.0&quot;</span> <span class="attr">data-ignored-duplicate-execute-types</span>=<span class="string">&quot;Open,OpenAsync,Close,CloseAsync&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>把上面获取到的script片段加入到index.html文件的最前面</p>
+</li>
+<li><p>重新启动项目，随意访问一个接口，然后就能看到页面左上方有一个浮动窗显示<code>xxx ms</code>，点击该面板就能看到熟悉的MiniProfiler分析界面</p>
+</li>
+</ol>
+<h3 id="再次强调"><a href="#再次强调" class="headerlink" title="再次强调"></a>再次强调</h3><ol>
+<li><p>网上的一些教程的 index.html 就是乱搞的，我试过几个都有问题，如果我的也有问题，只能自己再找找</p>
+</li>
+<li><p>MiniProfiler 相关 Script 片段这个最好不要随意使用别人给的，版本号很难刚好与自己所需版本匹配，还是使用上面提供的获取办法自己获取最好</p>
+</li>
+</ol>
+<p>  该部分内容参考文章：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/xuke/p/13847248.html">WebAPI性能监控-MiniProfiler与Swagger集成</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ASP-NET-Core/" rel="tag"># ASP.NET Core</a>
+              <a href="/tags/NET-Core/" rel="tag"># .NET Core</a>
+              <a href="/tags/Swagger/" rel="tag"># Swagger</a>
+              <a href="/tags/MiniProfiler/" rel="tag"># MiniProfiler</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/+ASP.NETCore%E7%9A%84Filter/" rel="prev" title="ASP.NETCore的Filter">
+      <i class="fa fa-chevron-left"></i> ASP.NETCore的Filter
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/+ASP.NETCore%E4%BD%BF%E7%94%A8JWT/" rel="next" title="ASP.NET Core使用JWT">
+      ASP.NET Core使用JWT <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-MiniProfiler"><span class="nav-text">什么是 MiniProfiler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-text">简单使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4"><span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AddMiniProfiler%E7%9A%84%E4%B8%80%E4%BA%9B%E9%80%89%E9%A1%B9%E8%AF%B4%E6%98%8E"><span class="nav-text">AddMiniProfiler的一些选项说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E5%90%88Swagger"><span class="nav-text">结合Swagger</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4-1"><span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%8D%E6%AC%A1%E5%BC%BA%E8%B0%83"><span class="nav-text">再次强调</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Singo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hushitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hushitong" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hushitong@163.com" title="E-Mail → mailto:hushitong@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hushitong@163.com</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">77k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

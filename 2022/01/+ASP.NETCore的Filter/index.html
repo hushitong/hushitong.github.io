@@ -14,12 +14,13 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
   <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
   <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="什么是Filter过滤器（Filter）是 AOP[^AOP] 思想的一种实现，让我们在执行管道（pipeline）的特定阶段（之前或之后）执行代码，管道在选择了要执行的操作之后运行。 下面图片显示了管道所在位置  通过使用过滤器可以实现 短路请求、缓存请求结果、日志统一记录、参数合法性验证、异常统一处理、返回值格式化 等，同时使业务代码更加简洁单纯，避免很多重复代码。">
@@ -35,7 +36,7 @@
 <meta property="article:modified_time" content="2022-01-24T16:00:00.000Z">
 <meta property="article:author" content="Singo">
 <meta property="article:tag" content="ASP.NET Core">
-<meta property="article:tag" content=".Net Core">
+<meta property="article:tag" content=".NET Core">
 <meta property="article:tag" content="Filter">
 <meta property="article:tag" content="过滤器">
 <meta name="twitter:card" content="summary">
@@ -129,7 +130,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -139,7 +140,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -179,10 +180,6 @@
     </header>
 
     
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
   <div class="reading-progress-bar"></div>
 
 
@@ -299,14 +296,14 @@
 </ul>
 <p><img src="https://raw.githubusercontent.com/hushitong/CloudImg/main/data/aspnetcore-filter-pipeline-2.jpg" alt="aspnetcore-filter-pipeline-2.jpg (1003×1344) (raw.githubusercontent.com)"></p>
 <p>所有Filter均可通过不同的接口定义支持同步和异步的实现。根据需要执行的任务类型，选择同步或异步实现。</p>
-<p>通过设置<strong>Context.Result</strong>来截断请求，可以是使Filter管道短路。</p>
+<p>通过设置 <strong>Context.Result</strong> 来截断请求，可以是使Filter管道短路。</p>
 <p><strong>注意：</strong>下面的例子优先使用同步方式实现。下面的例子是一个WebApi项目。</p>
 <h3 id="Authorizaion-Filter"><a href="#Authorizaion-Filter" class="headerlink" title="Authorizaion Filter"></a>Authorizaion Filter</h3><p>同步：继承<code>IResourceFilter</code>接口，实现<code>OnAuthorizationAsync</code>方法</p>
 <p>异步：继承<code>IAsyncResourceFilter</code>接口，实现<code>AuthorizationFilterAsync</code>方法</p>
 <p>下面是一个实际的鉴权例子，由我以前一个WebApi项目改造而来</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Authorization;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.Controllers;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.Filters;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Reflection;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">FilterTest.Filters</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AuthorizationFilter</span> : <span class="title">IAuthorizationFilter</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnAuthorization</span>(<span class="params">AuthorizationFilterContext context</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">$&quot;AuthorizationFilter.OnAuthorization, Request Path: <span class="subst">&#123;context.HttpContext.Request.Path&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//判断是否能被匿名调用</span></span><br><span class="line">            <span class="keyword">var</span> action = context.ActionDescriptor <span class="keyword">as</span> ControllerActionDescriptor;</span><br><span class="line">            <span class="keyword">var</span> allowAnonymousAttr = action.MethodInfo.GetCustomAttribute&lt;AllowAnonymousAttribute&gt;();</span><br><span class="line">            <span class="built_in">bool</span> isAllowAnonymous = allowAnonymousAttr == <span class="literal">null</span> ? <span class="literal">false</span> : <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//能被匿名调用，则继续执行；</span></span><br><span class="line">            <span class="comment">//不能被匿名调用，则验证是否授权访问，如果授权未通过，则抛出“未授权访问”信息</span></span><br><span class="line">            <span class="keyword">try</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (isAllowAnonymous == <span class="literal">false</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">//验证是否授权访问，如果授权未通过，则抛出“未授权访问”信息，流程不在往下走</span></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//对异常进行处理，需要注意抛出的异常不能被Exception Filter所捕获，因此不要想着直接throw出去</span></span><br><span class="line">                context.Result = <span class="keyword">new</span> ObjectResult(<span class="keyword">new</span> &#123; rtnCode = <span class="number">500</span>, msg = <span class="string">&quot;鉴权服务发生错误，请稍后重试或联系管理人员&quot;</span> &#125;); ;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//startup.cs文件里注入</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    services.AddControllers(config =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        config.Filters.Add&lt;AuthorizationFilter&gt;();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>需要注意的是如果在Authorizaion Filter中抛出的异常，那<strong>并不会被Exception Filter所捕获</strong></p>
+<p>需要注意的是如果在Authorizaion Filter中抛出的异常，那 <strong>并不会被Exception Filter所捕获</strong></p>
 <h3 id="Resource-Filter"><a href="#Resource-Filter" class="headerlink" title="Resource Filter"></a>Resource Filter</h3><p>同步：继承<code>IResourceFilter</code>接口，实现<code>OnResourceExecuting</code>与<code>OnResourceExecuted</code>方法</p>
 <p>异步：继承<code>IAsyncResourceFilter</code>接口，实现<code>OnResourceExecutionAsync</code>方法，注意没有<code>OnResourceExecutedAsync</code>这个方法</p>
 <p>下面是简单的页面缓存例子，在<code>OnResourceExecuted</code>获得缓存，在</p>
@@ -315,9 +312,9 @@
 <h3 id="Exception-Filter"><a href="#Exception-Filter" class="headerlink" title="Exception Filter"></a>Exception Filter</h3><p>同步：继承<code>IExceptionFilter</code>接口，实现<code>OnException</code>方法</p>
 <p>异步：继承<code>IAsyncExceptionFilter</code>接口，实现<code>OnExceptionAsync</code>方法</p>
 <p>下面例子catch了所有错误并进行处理</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.Filters;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Configuration;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">FilterTest.Filters</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ExceptionFilter</span> : <span class="title">IExceptionFilter</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> IConfiguration configuration;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ExceptionFilter</span>(<span class="params">IConfiguration configuration</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">this</span>.configuration = configuration;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnException</span>(<span class="params">ExceptionContext context</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">$&quot;ExceptionFilter.OnException, Request Path: <span class="subst">&#123;context.HttpContext.Request.Path&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">            ObjectResult result;</span><br><span class="line">            <span class="keyword">var</span> isShowDevExceptionMsg = <span class="string">&quot;false&quot;</span>;</span><br><span class="line">            <span class="comment">//isShowDevExceptionMsg = configuration.GetSection(&quot;IsShowDevExceptionMsg&quot;).Value;  //由配置得到</span></span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(isShowDevExceptionMsg) &amp;&amp; isShowDevExceptionMsg.ToLower() == <span class="string">&quot;true&quot;</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                result = <span class="keyword">new</span> ObjectResult(<span class="keyword">new</span> &#123; rtnCode = <span class="number">500</span>, msg = <span class="string">&quot;服务发生错误，请稍后重试或联系管理人员&quot;</span>, devMsg = context.Exception.Message &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                result = <span class="keyword">new</span> ObjectResult(<span class="keyword">new</span> &#123; rtnCode = <span class="number">500</span>, msg = <span class="string">&quot;服务发生错误，请稍后重试或联系管理人员&quot;</span> &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">            result.StatusCode = <span class="number">500</span>;</span><br><span class="line">            context.Result = result;</span><br><span class="line">            context.ExceptionHandled = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//startup.cs文件里注入</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    services.AddControllers(config =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        config.Filters.Add&lt;ExceptionFilter&gt;();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//新建FilterTestController.cs添加测试用Action</span></span><br><span class="line">[<span class="meta">HttpGet(<span class="string">&quot;TestException&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">TestException</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">return</span> Ok();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.Filters;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Configuration;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">FilterTest.Filters</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ExceptionFilter</span> : <span class="title">IExceptionFilter</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> IConfiguration configuration;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ExceptionFilter</span>(<span class="params">IConfiguration configuration</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">this</span>.configuration = configuration;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnException</span>(<span class="params">ExceptionContext context</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">$&quot;ExceptionFilter.OnException, Request Path: <span class="subst">&#123;context.HttpContext.Request.Path&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">            ObjectResult result;</span><br><span class="line">            <span class="keyword">var</span> isShowDevExceptionMsg = <span class="string">&quot;false&quot;</span>;</span><br><span class="line">            <span class="comment">//isShowDevExceptionMsg = configuration.GetSection(&quot;IsShowDevExceptionMsg&quot;).Value;  //由配置得到</span></span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(isShowDevExceptionMsg) &amp;&amp; isShowDevExceptionMsg.ToLower() == <span class="string">&quot;true&quot;</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                result = <span class="keyword">new</span> ObjectResult(<span class="keyword">new</span> &#123; rtnCode = <span class="number">500</span>, msg = <span class="string">&quot;服务发生错误，请稍后重试或联系管理人员&quot;</span>, devMsg = context.Exception.Message &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                result = <span class="keyword">new</span> ObjectResult(<span class="keyword">new</span> &#123; rtnCode = <span class="number">500</span>, msg = <span class="string">&quot;服务发生错误，请稍后重试或联系管理人员&quot;</span> &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">            result.StatusCode = <span class="number">500</span>;</span><br><span class="line">            context.Result = result;</span><br><span class="line">            context.ExceptionHandled = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//startup.cs文件里注入</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    services.AddControllers(config =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        config.Filters.Add&lt;ExceptionFilter&gt;();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//新建FilterTestController.cs添加测试用Action</span></span><br><span class="line">[<span class="meta">HttpGet(<span class="string">&quot;TestException&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">TestException</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>需要注意<code>Context.ExceptionHandled = true</code>，设置后<strong>标记异常已被处理，异常不会再抛出，后续的Exception Filter不会再触发</strong>。</p>
+<p>需要注意<code>Context.ExceptionHandled = true</code>，设置后 <strong>标记异常已被处理，异常不会再抛出，后续的Exception Filter不会再触发</strong> 。</p>
 <h3 id="Action-Filter"><a href="#Action-Filter" class="headerlink" title="Action Filter"></a>Action Filter</h3><p>同步：继承<code>IActionFilter</code>接口，实现<code>OnActionExecuting</code>与<code>OnActionExecuted</code>方法</p>
 <p>异步：继承<code>IAsyncActionFilter</code>接口，实现<code>OnActionExecutionAsync</code>方法</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.Filters;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">FilterTest.Filters</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ActionFilter</span> : <span class="title">IActionFilter</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnActionExecuting</span>(<span class="params">ActionExecutingContext context</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//做权限校验或参数验证等</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnActionExecuted</span>(<span class="params">ActionExecutedContext context</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//startup.cs文件里注入</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    services.AddControllers(config =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        config.Filters.Add&lt;ActionFilter&gt;();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -336,12 +333,12 @@
 <p>异步，与<code>Action Filter</code>的异步类似</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ResultFilterAsync</span> : <span class="title">IAsyncResultFilter</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">async</span> Task <span class="title">OnResultExecutionAsync</span>(<span class="params">ResultExecutingContext context, ResultExecutionDelegate next</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//Before Action，相当于同步的OnResultExecuting</span></span><br><span class="line">        <span class="keyword">await</span> next();</span><br><span class="line">        <span class="comment">//After Action，相当于同步的OnResultExecuted</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="Filter的注册"><a href="#Filter的注册" class="headerlink" title="Filter的注册"></a>Filter的注册</h2><p>Filter有三种注册方式<code>Action</code>、<code>Controller</code>、<code>全局</code> ，其作用域由低到高。</p>
-<h3 id="Action注册"><a href="#Action注册" class="headerlink" title="Action注册"></a>Action注册</h3><p>只针对特定的Action，影响最小，适合于对特定Action进行特殊处理。</p>
-<p>使用<code>[TypeFilter(Type)]</code>进行注册，如注册上面例子的ResourceFilter。</p>
+<h2 id="Filter的注册"><a href="#Filter的注册" class="headerlink" title="Filter的注册"></a>Filter的注册</h2><p>Filter有三种注册方式<code>Action</code>、<code>Controller</code>、<code>全局</code> ，其作用域<code>由低到高</code>。</p>
+<h3 id="Action注册"><a href="#Action注册" class="headerlink" title="Action注册"></a>Action注册</h3><p>只针对特定的 Action，影响最小，适合于对特定 Action 进行特殊处理。</p>
+<p>使用<code>[TypeFilter(Type)]</code>进行注册，如注册上面例子的 ResourceFilter。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line">[<span class="meta">TypeFilter(typeof(ResourceFilter))</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">Get</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> Ok();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Controller注册"><a href="#Controller注册" class="headerlink" title="Controller注册"></a>Controller注册</h3><p>影响该Controller下的所有Action。</p>
+<h3 id="Controller注册"><a href="#Controller注册" class="headerlink" title="Controller注册"></a>Controller注册</h3><p>影响该 Controller 下的所有 Action。</p>
 <p>与上面<code>Action注册</code>的办法一样，通过<code>[TypeFilter(Type)]</code>进行注册。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line">[<span class="meta">TypeFilter(typeof(ResourceFilter))</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">FilterTestController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> IActionResult <span class="title">Get</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> Ok();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -405,7 +402,7 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/ASP-NET-Core/" rel="tag"># ASP.NET Core</a>
-              <a href="/tags/Net-Core/" rel="tag"># .Net Core</a>
+              <a href="/tags/NET-Core/" rel="tag"># .NET Core</a>
               <a href="/tags/Filter/" rel="tag"># Filter</a>
               <a href="/tags/%E8%BF%87%E6%BB%A4%E5%99%A8/" rel="tag"># 过滤器</a>
           </div>
@@ -416,12 +413,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/01/+ASP.NETCore%E7%BC%93%E5%AD%98/" rel="prev" title="ASP.NET Core缓存">
-      <i class="fa fa-chevron-left"></i> ASP.NET Core缓存
+    <a href="/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8EFCore/" rel="prev" title="ASP.NET Core使用EFCore">
+      <i class="fa fa-chevron-left"></i> ASP.NET Core使用EFCore
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/02/+ASP.NETCore%E4%BD%BF%E7%94%A8JWT/" rel="next" title="ASP.NET Core使用JWT">
-      ASP.NET Core使用JWT <i class="fa fa-chevron-right"></i>
+    <a href="/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8MiniProfiler/" rel="next" title="ASP.NETCore使用Swagger">
+      ASP.NETCore使用Swagger <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -495,7 +492,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -508,7 +505,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">32</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -525,6 +522,10 @@
 
 
       </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
 
     </div>
   </aside>
@@ -543,7 +544,7 @@
 <div class="copyright">
   
   &copy; 2021 – 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -552,12 +553,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">50k</span>
+    <span title="站点总字数">77k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">46 分钟</span>
+    <span title="站点阅读时长">1:10</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -597,6 +598,9 @@
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -631,6 +635,19 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
 
   

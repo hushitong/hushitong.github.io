@@ -14,12 +14,13 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
   <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
   <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前言事情的起点就在于我在弄ASP .NET Core下的OAuth2.0流程，想要看看具体的Cookie信息有哪些，发现Cookie信息被加密了，检索了一番，发现了解决办法 如何解密Cookie ，然后顺便找了一下原理。 如何解密Cookie主要代码来源：How to manually decrypt an ASP.NET Core Authentication cookie?">
@@ -33,7 +34,7 @@
 <meta property="article:modified_time" content="2022-02-16T16:00:00.000Z">
 <meta property="article:author" content="Singo">
 <meta property="article:tag" content="ASP.NET Core">
-<meta property="article:tag" content=".Net Core">
+<meta property="article:tag" content=".NET Core">
 <meta property="article:tag" content="Data Protection">
 <meta property="article:tag" content="Cookie">
 <meta property="article:tag" content="解密">
@@ -128,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -138,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -178,10 +179,6 @@
     </header>
 
     
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
   <div class="reading-progress-bar"></div>
 
 
@@ -261,7 +258,7 @@
 
 <ol>
 <li><p><code>Startup.CongigureServices</code>里注册的部分代码</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">services.AddAuthentication(config =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//但我们登陆后，设置Cookie</span></span><br><span class="line">    config.DefaultSignInScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">    <span class="comment">//使用作为验证是否登陆</span></span><br><span class="line">    config.DefaultAuthenticateScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">&#125;).AddCookie(<span class="string">&quot;MyCookieScheme&quot;</span>, options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//设置密钥存储位置，你也可以使用services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@&quot;C:\temp-keys2\&quot;))</span></span><br><span class="line">    options.DataProtectionProvider = DataProtectionProvider.Create(<span class="keyword">new</span> DirectoryInfo(<span class="string">@&quot;C:\temp-keys\&quot;</span>));</span><br><span class="line">    options.Cookie.Name = <span class="string">&quot;MyClientCookie&quot;</span>; <span class="comment">//默认为：.AspNetCore.Cookies</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">services.AddAuthentication(config =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//当我们登陆后，设置Cookie</span></span><br><span class="line">    config.DefaultSignInScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">    <span class="comment">//使用作为验证是否登陆</span></span><br><span class="line">    config.DefaultAuthenticateScheme = <span class="string">&quot;MyCookieScheme&quot;</span>;</span><br><span class="line">&#125;).AddCookie(<span class="string">&quot;MyCookieScheme&quot;</span>, options =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//设置密钥存储位置，你也可以使用services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@&quot;C:\temp-keys2\&quot;))</span></span><br><span class="line">    options.DataProtectionProvider = DataProtectionProvider.Create(<span class="keyword">new</span> DirectoryInfo(<span class="string">@&quot;C:\temp-keys\&quot;</span>));</span><br><span class="line">    options.Cookie.Name = <span class="string">&quot;MyClientCookie&quot;</span>; <span class="comment">//默认为：.AspNetCore.Cookies</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
 <li><p>解密Cookie</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">HttpGet</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">DecryptCookie</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//获得加密了的Cookie值，Cookie名假如注册时候没指定的话为：.AspNetCore.Cookies</span></span><br><span class="line">    <span class="built_in">string</span> cookieValue = HttpContext.Request.Cookies[<span class="string">&quot;MyClientCookie&quot;</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//使用Create方法生成DataProtectionProvider对象，密钥存储位置值与在ConfigureServices注册时一致</span></span><br><span class="line">    <span class="keyword">var</span> provider = DataProtectionProvider.Create(<span class="keyword">new</span> DirectoryInfo(<span class="string">@&quot;C:\temp-keys\&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获得DataProtector对象，第二个参数的值你在注册Cookies时候设定的Scheme名，没有设定的话其默认值为：Cookies</span></span><br><span class="line">    <span class="keyword">var</span> dataProtector = provider.CreateProtector(<span class="string">&quot;Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationMiddleware&quot;</span>, <span class="string">&quot;MyCookieScheme&quot;</span>, <span class="string">&quot;v2&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//解密Cookie值，变为普通文本</span></span><br><span class="line">    <span class="built_in">byte</span>[] protectedBytes = Base64UrlTextEncoder.Decode(cookieValue);</span><br><span class="line">    <span class="built_in">byte</span>[] plainBytes = dataProtector.Unprotect(protectedBytes);</span><br><span class="line">    <span class="built_in">string</span> plainText = Encoding.UTF8.GetString(plainBytes);</span><br><span class="line">    <span class="comment">//上面的Encoding.UTF8.GetString不行的话使用下面的</span></span><br><span class="line">    <span class="comment">//UTF8Encoding specialUtf8Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);</span></span><br><span class="line">    <span class="comment">//string plainText = specialUtf8Encoding.GetString(plainBytes);</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//或解密Cookie值，转换为AuthenticationTicket对象</span></span><br><span class="line">    TicketDataFormat ticketDataFormat = <span class="keyword">new</span> TicketDataFormat(dataProtector);</span><br><span class="line">    AuthenticationTicket ticket = ticketDataFormat.Unprotect(cookieValue);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Ok(JsonConvert.SerializeObject(ticket.Properties.Items));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ol>
@@ -285,12 +282,12 @@
 
 <p>可以看到最后的加密的依赖就是 <code>Data Protection</code></p>
 <h3 id="Data-Protection"><a href="#Data-Protection" class="headerlink" title="Data Protection"></a><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/security/data-protection/introduction">Data Protection</a></strong></h3><blockquote>
-<p>Data Protection是微软提供的数据保护机制：</p>
-<p>为了确保Web应用敏感数据的安全存储，该机制提供了一个简单、基于非对称加密改进的、性能良好的、开箱即用的加密API用于数据保护。</p>
+<p>Data Protection 是微软提供的数据保护机制：</p>
+<p>为了确保 Web 应用敏感数据的安全存储，该机制提供了一个简单、基于非对称加密改进的、性能良好的、开箱即用的加密 API 用于数据保护。</p>
 <p>它不需要开发人员专门学习怎么样管理这些钥（公钥，私钥），系统回自动的选择算法和管理密钥的生命周期。理想情况下开发人员都不应该访问这些钥的原始文件。</p>
 </blockquote>
-<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>当我们SignIn时会把认证信息给Data Protection加密然后存储到Cookie。</p>
-<p>当我们获得其该Cookie进行认证时，该值又会被Data Protection给解密，默认该流程不需要用户设置，应用就会自动进行加解密。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>当我们 SignIn 时会把认证信息给 Data Protection 加密然后存储到 Cookie。</p>
+<p>当我们获得其该 Cookie 进行认证时，该值又会被 Data Protection 给解密，默认该流程不需要用户设置，应用就会自动进行加解密。</p>
 <h2 id="关于Data-Protection可扩展阅读"><a href="#关于Data-Protection可扩展阅读" class="headerlink" title="关于Data Protection可扩展阅读"></a>关于Data Protection可扩展阅读</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/savorboard/p/5778616.html">ASP.NET Core 数据保护（Data Protection）【上】</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/savorboard/p/dotnet-core-data-protection.html">ASP.NET Core 数据保护（Data Protection）【中】</a></p>
 <p>官方文档：</p>
@@ -305,7 +302,7 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/ASP-NET-Core/" rel="tag"># ASP.NET Core</a>
-              <a href="/tags/Net-Core/" rel="tag"># .Net Core</a>
+              <a href="/tags/NET-Core/" rel="tag"># .NET Core</a>
               <a href="/tags/Data-Protection/" rel="tag"># Data Protection</a>
               <a href="/tags/Cookie/" rel="tag"># Cookie</a>
               <a href="/tags/%E8%A7%A3%E5%AF%86/" rel="tag"># 解密</a>
@@ -394,7 +391,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -407,7 +404,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">32</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -424,6 +421,10 @@
 
 
       </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
 
     </div>
   </aside>
@@ -442,7 +443,7 @@
 <div class="copyright">
   
   &copy; 2021 – 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -451,12 +452,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">50k</span>
+    <span title="站点总字数">77k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">46 分钟</span>
+    <span title="站点阅读时长">1:10</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -496,6 +497,9 @@
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -530,6 +534,19 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
 
   

@@ -14,12 +14,13 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
   <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
   <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"hushitong.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"right","width":230,"display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="基础知识Caching通过减少生成内容所需的工作，显著提高应用的性能和可伸缩性。 Caching最适用于不经常更改且 生成成本高 的数据。 Caching可比从源返回快得多的数据副本。 ASP.NET Core支持多个不同的缓存  客户端缓存 Cache-control 服务器端响应缓存 ResponseCaching 内存缓存  In-MemoryCache 分布式缓存 DistributedC">
@@ -33,7 +34,7 @@
 <meta property="article:modified_time" content="2022-01-18T16:00:00.000Z">
 <meta property="article:author" content="Singo">
 <meta property="article:tag" content="ASP.NET Core">
-<meta property="article:tag" content=".Net Core">
+<meta property="article:tag" content=".NET Core">
 <meta property="article:tag" content="Caching">
 <meta property="article:tag" content="缓存">
 <meta name="twitter:card" content="summary">
@@ -126,7 +127,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -136,7 +137,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -176,10 +177,6 @@
     </header>
 
     
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
   <div class="reading-progress-bar"></div>
 
 
@@ -234,7 +231,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.8k</span>
+              <span>8.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -288,6 +285,7 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ValuesController</span> : <span class="title">Controller</span></span><br><span class="line">&#123;  </span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    [<span class="meta">ResponseCache(Duration = 30)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionResult&lt;<span class="built_in">bool</span>&gt; <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> accId</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> accountService.Validate(accID);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ol>
 <p>这时候你通过同一客户端多次访问该资源发现第二次以后的访问的是客户端缓存，通过不同客户端访问的是服务器缓存的内容。</p>
+<p>上面的例子用的是 MemoryCache 作为储存介质，如果应用重启了，缓存的数据就会失效。</p>
 <h3 id="ResponseCaching的缓存条件"><a href="#ResponseCaching的缓存条件" class="headerlink" title="ResponseCaching的缓存条件"></a>ResponseCaching的缓存条件</h3><ul>
 <li>请求必须生成状态代码为”正常”的 200 (服务器) 响应。</li>
 <li>请求方法必须是 GET 或 HEAD。</li>
@@ -312,18 +310,18 @@
 <li><p>注入<code>IMemoryCache</code></p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> IMemoryCache _cache;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">MemoryCacheController</span>(<span class="params">IMemoryCache memoryCache</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    _cache = memoryCache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 <li><p>使用<code>TryGetValue</code>、<code>Remove</code>、<code>Set</code>、<code>GetOrCreate</code>等方法操作MemoryCache</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MemoryCacheController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> IMemoryCache _cache;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MemoryCacheController</span>(<span class="params">IMemoryCache memoryCache</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache = memoryCache;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Get</span>(<span class="params"><span class="built_in">int</span> id</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> strName = <span class="string">&quot;未知&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//方法一、使用TryGetValue与Set</span></span><br><span class="line">        <span class="comment">//if (!_cache.TryGetValue(&quot;Name&quot;, out strName))</span></span><br><span class="line">        <span class="comment">//&#123;</span></span><br><span class="line">        <span class="comment">//    strName = GetNmae(id);</span></span><br><span class="line">        <span class="comment">//    _cache.Set(&quot;Name&quot;, strName);</span></span><br><span class="line">        <span class="comment">//&#125;</span></span><br><span class="line">        <span class="comment">//方法二、使用GetOrCreate</span></span><br><span class="line">        <span class="comment">//strName = _cache.GetOrCreate&lt;string&gt;(&quot;Name&quot;, (e) =&gt; &#123; return GetNmae(id); &#125;);</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> strName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Remove&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Remove</span>(<span class="params"><span class="built_in">string</span> cacheName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache.Remove(cacheName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetNmae</span>(<span class="params"><span class="built_in">int</span> id</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">switch</span> (id)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>: <span class="keyword">return</span> <span class="string">&quot;Singo&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>: <span class="keyword">return</span> <span class="string">&quot;古月&quot;</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            <span class="literal">default</span>: <span class="keyword">return</span> <span class="string">&quot;无名&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Route(<span class="string">&quot;api/[controller]&quot;</span>)</span>]</span><br><span class="line">[<span class="meta">ApiController</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MemoryCacheController</span> : <span class="title">ControllerBase</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> IMemoryCache _cache;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MemoryCacheController</span>(<span class="params">IMemoryCache memoryCache</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache = memoryCache;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">Get</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> serverTime;</span><br><span class="line"></span><br><span class="line">        <span class="meta">#<span class="keyword">region</span> 读取写入缓存</span></span><br><span class="line">        <span class="comment">//方法一、使用TryGetValue与Set</span></span><br><span class="line">        <span class="comment">//if (!_cache.TryGetValue(&quot;servertime&quot;, out serverTime))</span></span><br><span class="line">        <span class="comment">//&#123;</span></span><br><span class="line">        <span class="comment">//    serverTime = DateTime.Now.ToString(&quot;F&quot;);</span></span><br><span class="line">        <span class="comment">//    _cache.Set(&quot;servertime&quot;, serverTime);</span></span><br><span class="line">        <span class="comment">//&#125;</span></span><br><span class="line">        <span class="comment">//方法二、使用GetOrCreate</span></span><br><span class="line">        <span class="comment">//serverTime = _cache.GetOrCreate&lt;string&gt;(&quot;serverTime&quot;, (e) =&gt; &#123; return DateTime.Now.ToString(&quot;F&quot;);&#125;);</span></span><br><span class="line">        <span class="meta">#<span class="keyword">endregion</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> serverTime;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">HttpGet(<span class="string">&quot;Remove&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Remove</span>(<span class="params"><span class="built_in">string</span> cacheName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _cache.Remove(cacheName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ol>
-<p>访问<code>Get</code>方法获得数据并设置一个名字为”Name”的MemoryCache，在过期前再次访问获得的都是MemoryCache里的数据，可以通过访问<code>Remove</code>方法，传入参数”Name”，即可清除名字为”Name”的MemoryCache。</p>
+<p>访问<code>Get</code>方法获得数据并设置一个名字为 **servertime **的MemoryCache，在过期前再次访问获得的都是MemoryCache里的数据，可以通过访问<code>Remove</code>方法，传入参数”servertime “，即可清除名字为”servertime “的MemoryCache。</p>
 <h3 id="过期时间策略"><a href="#过期时间策略" class="headerlink" title="过期时间策略"></a>过期时间策略</h3><p>默认情况下内存缓存是不会过期的，因此我们可以通过<code>Remove</code>方法删除缓存，或者使用<code>Set</code>方法重新设置缓存，不过在实际应用中大部分时间不会这么做，因为这么弄很麻烦，更常用的办法时使用过期时间来管理。</p>
 <p>过期时间策略有两种</p>
 <ul>
 <li><p>绝对过期时间，通过设置<code>ICacheEntry.AbsoluteExpirationRelativeToNow</code>(过多少时间后失效)或<code>ICacheEntry.AbsoluteExpiration</code>(什么时间点失效)。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//不会过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123; <span class="keyword">return</span> GetNmae(id); &#125;);</span><br><span class="line"><span class="comment">//5秒后过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//在今天晚上23点失效</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpiration = System.DateTime.Today.AddHours(<span class="number">23</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//不会过期</span></span><br><span class="line">serverTime = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;serverTime&quot;</span>, (e) =&gt; &#123; <span class="keyword">return</span> DateTime.Now.ToString(<span class="string">&quot;F&quot;</span>); &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//5秒后过期</span></span><br><span class="line">serverTime = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;servertime&quot;</span>, (e) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">return</span> DateTime.Now.ToString(<span class="string">&quot;F&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//在今天晚上23点失效</span></span><br><span class="line">serverTime = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;servertime&quot;</span>, (e) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    e.AbsoluteExpiration = System.DateTime.Today.AddDays(<span class="number">23</span>);</span><br><span class="line">    <span class="keyword">return</span> DateTime.Now.ToString(<span class="string">&quot;F&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
 <li><p>滑动过期时间，通过设置<code>ICacheEntry.SlidingExpiration</code>(过多少时间后失效，但是如果在失效前一直有访问尽量，那就会延长设置的时间（注意是在被访问的时间点上），直到过期。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//5秒后过期，假如在过期前被访问，以被访问时间点位基准再次延迟5秒，直到过期</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//5秒后过期，假如在过期前被访问，以被访问时间点位基准再次延迟5秒，直到超过5秒无访问过期</span></span><br><span class="line">serverTime = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;servertime&quot;</span>, (e) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">return</span> DateTime.Now.ToString(<span class="string">&quot;F&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
 <li><p>不过可以混用两种策略，让缓存数据能够在滑动过期时间的基础上，通过设置绝对过期时间来达到强制刷新数据的目的，也就是说在绝对过期时间这个点数据必定过期，滑动时间影响不了。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//混用绝对过期时间与滑动过期时间</span></span><br><span class="line">strName = _cache.GetOrCreate&lt;<span class="built_in">string</span>&gt;(<span class="string">&quot;Name&quot;</span>, (e) =&gt; &#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(<span class="number">15</span>);  <span class="comment">//绝对过期时间15秒</span></span><br><span class="line">    e.SlidingExpiration = System.TimeSpan.FromSeconds(<span class="number">5</span>);  <span class="comment">//滑动过期时间5秒</span></span><br><span class="line">    <span class="keyword">return</span> GetNmae(id); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//混用绝对过期时间与滑动过期时间</span></span><br><span class="line">serverTime = _cache.GetOrCreate(<span class="string">&quot;servertime&quot;</span>, (e) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    e.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(<span class="number">15</span>);  <span class="comment">//绝对过期时间15秒</span></span><br><span class="line">    e.SlidingExpiration = TimeSpan.FromSeconds(<span class="number">5</span>);  <span class="comment">//滑动过期时间5秒</span></span><br><span class="line">    <span class="keyword">return</span> DateTime.Now.ToString(<span class="string">&quot;F&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
 </ul>
 <h2 id="分布式缓存-DistributedCache"><a href="#分布式缓存-DistributedCache" class="headerlink" title="分布式缓存 DistributedCache"></a>分布式缓存 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed">DistributedCache</a></h2><p>内存缓存在比较简单的应用里是足够使用的，但是对于现在需要多台服务器进行负载均衡的架构环境中就显得有点不太够用，如会出现：缓存内容不一致、多台服务器缓存同一内容浪费内存空间等问题，因此需要一个独立的统一的缓存存储中心，以便让所有的Web服务器共享同一份缓存数据，我们将这种缓存形式称为<strong>分布式缓存</strong>。</p>
 <h3 id="有关-NET-Core的分布式缓存"><a href="#有关-NET-Core的分布式缓存" class="headerlink" title="有关.NET Core的分布式缓存"></a>有关.NET Core的分布式缓存</h3><ul>
@@ -398,7 +396,7 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/ASP-NET-Core/" rel="tag"># ASP.NET Core</a>
-              <a href="/tags/Net-Core/" rel="tag"># .Net Core</a>
+              <a href="/tags/NET-Core/" rel="tag"># .NET Core</a>
               <a href="/tags/Caching/" rel="tag"># Caching</a>
               <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
           </div>
@@ -409,12 +407,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/01/+ASP.NETCore%E4%BD%BF%E7%94%A8Swagger/" rel="prev" title="ASP.NETCore使用Swagger">
-      <i class="fa fa-chevron-left"></i> ASP.NETCore使用Swagger
+    <a href="/2022/01/+ASP.NETCore%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5%E6%8F%90%E8%AE%AE/" rel="prev" title="ASP.NETCore依赖注入提议">
+      <i class="fa fa-chevron-left"></i> ASP.NETCore依赖注入提议
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/01/+ASP.NETCore%E7%9A%84Filter/" rel="next" title="ASP.NETCore的Filter">
-      ASP.NETCore的Filter <i class="fa fa-chevron-right"></i>
+    <a href="/2022/01/+ASP.NETCore%E7%9A%84%E9%85%8D%E7%BD%AE%E7%B3%BB%E7%BB%9F/" rel="next" title="ASP.NET Core的配置系统">
+      ASP.NET Core的配置系统 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -488,7 +486,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -501,7 +499,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">32</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -518,6 +516,10 @@
 
 
       </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
 
     </div>
   </aside>
@@ -536,7 +538,7 @@
 <div class="copyright">
   
   &copy; 2021 – 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -545,12 +547,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">50k</span>
+    <span title="站点总字数">77k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">46 分钟</span>
+    <span title="站点阅读时长">1:10</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -590,6 +592,9 @@
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -624,6 +629,19 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
 
   
